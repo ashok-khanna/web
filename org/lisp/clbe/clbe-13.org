@@ -1,0 +1,279 @@
+#+DATE: 24 July 2021
+
+#+TITLE: More on Functions
+
+Previous: [[file:clbe-12.org][12. Lists & List Manipulation]]
+
+Next: [[file:clbe-14.org][14. Arrays & Sequences]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+Functions in Lisp are first-class objects that generally support all
+operations available to other data objects, such as being modified,
+passed as an argument, returned from a function and being assigned to
+a variable.
+
+The FUNCTION special operator (shorthand #') returns the function
+object associated with the name of function that is supplied as an
+argument:
+
+#+begin_src lisp
+
+  ;; Returns the function object
+
+  (function +)
+
+  ;; Equivalent syntax
+
+  #'+
+
+#+end_src
+
+When you type the above in your toplevel, your Lisp implementation
+will print the external representation of the function object
+(implementations are free to choose whatever external representation
+they like), such as #<FUNCTION +>. Internally however, a built-in
+function like + is likely to be a segment of machine language. CONS or
++ are examples of symbols used to name built-in Lisp functions. The
+symbol CONS has a pointer in its function cell to a "compiled code
+object" that represents the machine language instructions for creating
+new cons cells.
+
+For user defined functions, the DEFUN macro is used to name a function
+with a symbol. For example, in the below example, the symbol HALF
+names the function, whilst the symbol itself is named by the string
+"HALF". The function cell of the symbol points to a function object
+that is the real function. Exactly what this function object looks
+like depends on which implementation of Common Lisp you’re using, but
+as the diagram indicates, there’s probably a lambda expression in
+there somewhere.
+
+APPLY takes a function and a list of arguments for it and returns the
+result of applying the function to its arguments. Note how we have to
+use to sharp-quote (#') to pass the + function as an object into the
+APPLY function. Without doing so, Lisp will return an error as it will
+try to evaluate +, which is not legally permissible in the below
+example.
+
+#+begin_src lisp
+
+  ;; Returns 6
+
+  (apply #'+ '(1 2 3)) 
+
+#+end_src
+
+The function FUNCALL is similar to APPLY, but allows us to pass
+arguments individually and not packaged as a list:
+
+#+begin_src lisp
+
+  ;; Returns 6
+
+  (funcall #'+ 1 2 3)
+
+#+end_src
+
+We can use APPLY and FUNCALL to evaluate lambda expressions, as lambda
+expressions are nothing but lists which can be used directly in place
+of function names.
+
+Below is an example of passing a lambda expression to FUNCALL:
+
+#+begin_src lisp
+
+  ;; Returns 6
+  
+  (funcall #'(lambda (x y z)
+	       (+ x y z))
+	   1 2 3)
+
+#+end_src
+
+As a closing remark, Lisp programs are nothing but lists
+themselves. The function EVAL takes an expression, evaluates it and
+returns its value. In fact, our toplevel is nothing but a
+read-eval-print loop (hence known as REPL). Calling EVAL ourselves is
+not advisable as it is inefficient (lists are evaluated at run-time
+and not as compiled coded) and as it does not handle lexical context
+(EVAL within a LET cannot refer to variables established by the
+LET). Indeed, one of the only places where it is appropriate to use
+EVAL is in a top-level loop.
+
+#+begin_src lisp
+
+  ;; Returns 6
+
+  (eval '(+ 1 2 3))
+
+#+end_src
+
+* Function Parameters
+
+By default, a function call must supply values for all parameters that
+feature in the function definition. We can modify this behaviour with
+the &optional, &key and &rest tokens. The &optional token allows to
+distinguish between required parameters, placed before the &optional
+token, and optional parameters, placed after the token:
+
+#+begin_src lisp
+
+  (defun make-a-list (a b c d &optional e f g)
+    (list a b c d e f g))
+
+
+  ;; Returns (1 2 3 4 5 NIL NIL)
+
+  (make-a-list 1 2 3 4 5)
+
+#+end_src
+	
+One drawback of the &optional token, using the above as an example, is
+that we need to supply values for E and F if we want to supply the
+value for G, as arguments in a function call are assigned to the
+parameters in order. To overcome this, we utilise the &key token to be
+able to specify which optional parameter we want to assign a value
+to. Below is an example of this,
+
+#+begin_src lisp
+
+  (defun make-a-list-2 (a b c d &key (e 1) f g)
+    (list a b c d e f g))
+
+  
+  ;; Returns (1 2 3 4 1 NIL 7)
+  
+  (make-a-list-2 1 2 3 4 :g 7)
+
+#+end_src
+
+The preceding example also shows how we can supply a default value to
+an optional (setting E to 1 if no value for E is provided). When we
+called this function in the above, we set G to 7 and E also defaulted
+to 1. As no value was supplied for F, it defaulted to NIL.
+
+In general, &key is preferable to &optional as it allows us to have
+greater control in our function calls. It also makes code easier to
+maintain and evolve as we can add new parameters to a function without
+affecting existing function calls (useful when writing libraries that
+are already being used by other programs).
+
+Finally, the &rest token, placed before the last variable in a
+parameter list, allows us to write functions that can accept an
+unknown number of arguments. The last variable will be set to a list
+of all the remaining arguments supplied by the function call:
+
+#+begin_src lisp
+
+(defun make-a-list-3 (a b c d &rest e) (list a b c d e))
+
+(make-a-list-3 1 2 3 4 5 6 7 8) ; (1 2 3 4 (5 6 7 8))
+
+#+end_src
+
+We can utilise multiple tokens in the same function call, as long as
+we declare them in order. First the names of required parameters are
+declared, then the optional parameters, then the rest parameter and
+finally the keyword parameters are declared.
+
+* Multiple-Value-Binds
+
+Until now, we have only considered functions that return one value. In
+certain circumstances it is useful for a function to return several
+values, without having to build an overarching structure to contain
+them all. This is achieved through multiple-value-binds.
+
+The VALUES function returns multiple values and can be used as the
+last expression in the body of a function. The below example returns
+1, NIL and 6 (individually, not as a list):
+
+#+begin_src lisp
+
+(values 1 nil (+ 2 4))
+
+#+end_src
+
+If a VALUES function is supplied as an argument to a form which is
+only expecting one value, the first value returned by the VALUES
+function is used and the rest are discarded:
+
+#+begin_src lisp
+
+  ;; Returns 6
+  
+  (+ 5 (values 1 nil (+ 2 4)))
+
+#+end_src
+
+The MULTIPLE-VALUE-BIND macro is used to receive multiple values. The
+first argument of this macro is the variables and the second is the
+expression that returns their values. We can then use these values in
+the body of the multiple-value-bind macro. Below is an example.
+
+#+begin_src lisp
+
+  ;; Returns (1 2 3)
+
+  (multiple-value-bind (x y z) (values 1 2 3)
+    (list x y z)) 
+
+#+end_src
+
+If there are more variables than values, the leftover variables will
+be bound to NIL. If there are more values than variables, the extra
+values will be discarded. Finally, you can pass multiple values as
+arguments to a function using the MULTIPLE-VALUE-CALL special
+operator:
+
+#+begin_src lisp
+
+  ;; Returns 6
+
+  (multiple-value-call #'+ (values 1 2 3)) 
+
+#+end_src
+
+* Applying Functions To Elements of a List
+
+MAPCAR takes a function and one or more lists and returns a list of
+the results of applying the function to elements taken from each
+list. A function with multiple arguments takes one element from each
+list, as in the second and third examples below.
+
+#+begin_src lisp
+
+  ;; Returns (2 3 4)
+
+  (mapcar #'(lambda (x)
+	      (+ x 1))
+	  '(1 2 3))
+
+
+  ;; Returns (6 12 18)
+
+  (mapcar #'(lambda (x y)
+	      (+ x y))
+	  '(1 2 3)
+	  '(5 10 15))
+
+  
+  ;; Returns (16 32 48)
+  
+  (mapcar #'+ '(1 2 3)
+	  '(5 10 15)
+	  '(10 20 30))
+
+#+end_src
+
+A similar function is MAPLIST, which works on successive cdrs of the
+list:
+
+#+begin_src lisp
+
+  ;; Returns ((1 2 3) (2 3) (3))
+
+  (maplist #'(lambda (x)
+	       x)
+	   '(1 2 3))
+
+#+end_src

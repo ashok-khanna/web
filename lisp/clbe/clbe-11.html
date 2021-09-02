@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Brief Detour - Code Formatting</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">A Brief Detour - Code Formatting</h1>
+<p>
+Previous: <a href="clbe-10.html">10. Local Variables &amp; Functions</a>
+</p>
+
+<p>
+Next: <a href="clbe-12.html">12. Lists &amp; List Manipulation</a>
+</p>
+
+<p>
+Congratulations — you have now completed a basic introduction of
+Common Lisp! We will now take a brief detour to discuss conventions
+for formatting Lisp code, before returning to intermediate and
+advanced concepts in Lisp in the succeeding sections.
+</p>
+
+<p>
+It is important to format Lisp code according to shared conventions.
+This will allow others to read your code and it will make your life
+easier as unformatted Lisp code is difficult to read.
+</p>
+
+<div id="outline-container-orgfe7d871" class="outline-2">
+<h2 id="orgfe7d871">Parentheses &amp; Line Spacing</h2>
+<div class="outline-text-2" id="text-orgfe7d871">
+<p>
+Horizontally space elements within Lisp forms like (+ (+ 1 2) 3),
+with no whitespace around parentheses. Always put ending parentheses
+on the last line of code and not separately on newlines by themselves.
+</p>
+
+<p>
+When a Lisp form does not fit on one line, consider inserting newlines
+between the arguments so that each one is on a separate line. However,
+do not insert newlines in a way that makes it hard to tell how many
+arguments the function takes or where an argument starts and ends.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4ec7d99" class="outline-2">
+<h2 id="org4ec7d99">Indentation</h2>
+<div class="outline-text-2" id="text-org4ec7d99">
+<p>
+Indent your code the way a properly configured GNU Emacs does. In
+practice, this means relying on a Lisp editor (such as Emacs) that
+indents code automatically. Lisp editors have a complex set of indenting
+rules, but they can be generalised in most instances as follows:
+</p>
+
+<ul class="org-ul">
+<li>Function arguments are aligned with the first argument. If the first
+argument is on its own line, it is aligned with the function name</li>
+
+<li>Bodies of forms are indented two spaces</li>
+
+<li>Distinguished (“special”) arguments are indented four spaces
+when on a newline</li>
+</ul>
+
+<p>
+The purpose of indenting is to visually communicate nesting. This is
+most commonly achieved with the nesting of the bodies through the
+standard two spaces of indentation. Function arguments and
+distinguished arguments have a greater level of indentation to
+visually separate them and ensure they are not confused as part of a
+nested form.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org0e00a5e" class="outline-2">
+<h2 id="org0e00a5e">Examples</h2>
+<div class="outline-text-2" id="text-org0e00a5e">
+<p>
+Below are some examples that illustrate the above guidelines.
+</p>
+
+<p>
+<b>Good: Group ending parentheses on the last line of the form</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">my-function</span> (x)
+  (<span style="color: #a020f0;">if</span> (&lt; x 0)
+      (<span style="color: #8b2252;">"Negative"</span>)
+      (<span style="color: #8b2252;">"Non-positive"</span>)))
+
+
+</pre>
+</div>
+
+<p>
+<b>Bad: Never place parentheses on their own lines</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">my-function</span> (x)
+  (<span style="color: #a020f0;">if</span> (&lt; x 0)
+      (<span style="color: #8b2252;">"Negative"</span>)
+      (<span style="color: #8b2252;">"Non-positive"</span>)
+  )
+)
+
+</pre>
+</div>
+
+<p>
+<b>Good: Function arguments are aligned under the first argument</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(my-function first-arg
+             second-arg
+             third-arg)
+
+</pre>
+</div>
+
+<p>
+<b>Bad: Without extra indentation, function calls can be confused
+for nested bodies</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(my-function first-arg
+ second-arg
+ third-arg)
+
+</pre>
+</div>
+
+<p>
+<b>Good: Bodies of forms should be nested two spaces</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">when</span> something
+  (<span style="color: #a020f0;">do-this</span>)
+  (and-this)
+  (and-also-this))
+
+</pre>
+</div>
+
+<p>
+<b>Good: Distinguished forms should be nested four spaces</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">with-slots</span> (a b)
+    (distinguished-form)
+  (print a) (print b))
+
+</pre>
+</div>
+
+<p>
+Note in the first example above, the IF form is indented in a similar
+manner to a function call. This is purely coincidental: the test, then
+and else forms are distinguished arguments and indented four
+spaces. This coincidentally happens to line them up under the first
+argument.
+</p>
+
+<p>
+To doubly emphasise the point of function calls and distinguished
+arguments having special indentation, note that an IF form would be
+very confusing with standard indentation as we may incorrectly assume
+the last two forms are to be evaluated consecutively as part of the
+then form:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">if</span> (&lt; x 0)
+  (+ 1 5)
+  (+ 4 6))
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

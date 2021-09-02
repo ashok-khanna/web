@@ -1,0 +1,50 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Reading & Writing to Files
+
+Previous: [[file:clbe-16.org][16. Structures]]
+
+Next: [[file:clbe-18.org][18. Advanced Looping]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+The WITH-OPEN-FILE macro is used to read & write to files and then
+close the file. Streams are Lisp objects representing sources and/or
+destinations of characters. To read from or write to a file, you open
+it as a stream. By default, input is read from the stream *​standard-input​*
+and output is recorded in *​standard-output​*. Initially they will be the
+same place - the toplevel.
+
+Below is an example opening a file as my-stream and then reading from
+it. The NIL in the below inhibits end of file errors.
+
+#+begin_src lisp
+
+  (with-open-file (my-stream "/Users/ashokkhanna/test.txt")
+    (format t "~a~%" (read-line my-stream nil)))
+
+#+end_src
+
+Below is an example opening a file as my-stream and then writing to
+it.
+
+#+begin_src lisp
+
+  (with-open-file (my-stream "/Users/ashokkhanna/test.txt" :direction
+			     :output :if-exists :append)
+    (format my-stream "~a~%" "Hello, World!"))
+
+#+end_src
+
+The following open arguments can be supplied to the WITH-OPEN-FILE
+macro:
+
+| Arguments                  | Effect                             |
+|----------------------------+------------------------------------|
+| :direction :output         | Write to a file insead of reading  |
+| :if-does-not-exist :create | Create a file if it does not exist |
+| :if-exists :supersede      | Replace the file that exists       |
+| :if-exists :overwrite      | Overwrite file                     |
+| :if-exists :append         | Write to end of file               |
+
+

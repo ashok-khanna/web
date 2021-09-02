@@ -1,0 +1,64 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Blocks
+
+Previous: [[file:clbe-5.org][5. Global Functions]]
+
+Next: [[file:clbe-7.org][7. Data Types]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+Until now we have been working with singular Lisp forms. Frequently
+however, we want to evaluate a block of code together, such as within
+functions, or within an if statement or a loop. The PROGN special
+operator allows us to evaluate a sequence of Lisp forms in order and
+return the value of the last as the value of the PROGN form. Below is
+an example:
+
+#+begin_src lisp
+
+  ;; Returns 10
+    
+  (progn
+    (print "Hello")
+    (print "World")
+    (+ 5 5))
+ 
+#+end_src
+
+The BLOCK special operator is similar, but it is named and has a
+mechanism for out-of-order exit with the RETURN-FROM operator. As
+mentioned earlier, the bodies of functions are wrapped in an implicit
+BLOCK.
+
+#+begin_src lisp
+
+  ;; Returns 10
+  
+  (block my-block
+    (print "We see this")
+    (return-from my-block 10)
+    (print "We will never see this"))
+
+#+end_src
+
+The RETURN macro returns its argument as the value of an enclosing
+BLOCK named NIL.  Many Common Lisp operators that take a body of
+expressions implicitly enclose the body in a BLOCK named NIL and we
+can use RETURN in these forms:
+
+ #+begin_src lisp
+
+   ;; Returns 10 when 1 = 3 and
+   ;; prints 1 and 2
+   
+   (dolist (i '(1 2 3 5 6 7))
+     (if (= i 3)
+	 (return 10))
+     (print i))
+
+ #+end_src
+
+The value of the last expression is returned by the block (unless
+modified by RETURN or RETURN-FROM). All other expressions in the block
+are thus only useful for their side effects.

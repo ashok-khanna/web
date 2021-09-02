@@ -1,0 +1,17 @@
+#+DATE: 31 July 2021
+
+#+TITLE: Notes on SICP & CL
+
+#+HTML_LINK_UP: https://www.math.dev
+
+# Next: [[file:sicp-1.org][1. Building Abstractions with Procedures]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+* Table of Contents
+
+1. [[file:sicp-1.org][Building Abstractions with Procedures]]
+2. [[file:sicp-2.org][Building Abstractions with Data]]
+3. [[file:sicp-3.org][Modularity, Objects and State]]
+4. [[file:sicp-4.org][Metalinguistic Abstraction]]
+5. [[file:sicp-5.org][Computing with Register Machines]]

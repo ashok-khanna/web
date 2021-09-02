@@ -1,0 +1,142 @@
+#+DATE: 24 July 2021
+
+#+TITLE: A Brief Detour - Code Formatting
+
+Previous: [[file:clbe-10.org][10. Local Variables & Functions]]
+
+Next: [[file:clbe-12.org][12. Lists & List Manipulation]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+Congratulations — you have now completed a basic introduction of
+Common Lisp! We will now take a brief detour to discuss conventions
+for formatting Lisp code, before returning to intermediate and
+advanced concepts in Lisp in the succeeding sections.
+
+It is important to format Lisp code according to shared conventions.
+This will allow others to read your code and it will make your life
+easier as unformatted Lisp code is difficult to read.
+
+* Parentheses & Line Spacing
+
+Horizontally space elements within Lisp forms like (+ (+ 1 2) 3),
+with no whitespace around parentheses. Always put ending parentheses
+on the last line of code and not separately on newlines by themselves.
+
+When a Lisp form does not fit on one line, consider inserting newlines
+between the arguments so that each one is on a separate line. However,
+do not insert newlines in a way that makes it hard to tell how many
+arguments the function takes or where an argument starts and ends.
+
+* Indentation
+
+Indent your code the way a properly configured GNU Emacs does. In
+practice, this means relying on a Lisp editor (such as Emacs) that
+indents code automatically. Lisp editors have a complex set of indenting
+rules, but they can be generalised in most instances as follows:
+
+- Function arguments are aligned with the first argument. If the first
+  argument is on its own line, it is aligned with the function name
+
+- Bodies of forms are indented two spaces
+
+- Distinguished (“special”) arguments are indented four spaces
+  when on a newline
+
+The purpose of indenting is to visually communicate nesting. This is
+most commonly achieved with the nesting of the bodies through the
+standard two spaces of indentation. Function arguments and
+distinguished arguments have a greater level of indentation to
+visually separate them and ensure they are not confused as part of a
+nested form.
+
+* Examples
+
+Below are some examples that illustrate the above guidelines.
+
+*Good: Group ending parentheses on the last line of the form*
+
+#+begin_src lisp
+
+  (defun my-function (x)
+    (if (< x 0)
+	("Negative")
+	("Non-positive")))
+
+
+#+end_src
+
+*Bad: Never place parentheses on their own lines*
+
+#+begin_src lisp
+
+  (defun my-function (x)
+    (if (< x 0)
+	("Negative")
+	("Non-positive")
+    )
+  )
+
+#+end_src
+
+*Good: Function arguments are aligned under the first argument*
+
+#+begin_src lisp
+
+  (my-function first-arg
+	       second-arg
+	       third-arg)
+
+#+end_src
+
+*Bad: Without extra indentation, function calls can be confused
+for nested bodies*
+
+#+begin_src lisp
+
+  (my-function first-arg
+   second-arg
+   third-arg)
+
+#+end_src
+
+*Good: Bodies of forms should be nested two spaces*
+
+#+begin_src lisp
+
+  (when something
+    (do-this)
+    (and-this)
+    (and-also-this))
+
+#+end_src
+
+*Good: Distinguished forms should be nested four spaces*
+
+ #+begin_src lisp
+
+   (with-slots (a b)
+       (distinguished-form)
+     (print a) (print b))
+
+ #+end_src
+
+Note in the first example above, the IF form is indented in a similar
+manner to a function call. This is purely coincidental: the test, then
+and else forms are distinguished arguments and indented four
+spaces. This coincidentally happens to line them up under the first
+argument.
+
+To doubly emphasise the point of function calls and distinguished
+arguments having special indentation, note that an IF form would be
+very confusing with standard indentation as we may incorrectly assume
+the last two forms are to be evaluated consecutively as part of the
+then form:
+
+#+begin_src lisp
+
+  (if (< x 0)
+    (+ 1 5)
+    (+ 4 6))
+
+#+end_src

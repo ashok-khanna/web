@@ -1,0 +1,9 @@
+#+DATE: 31 July 2021
+
+#+TITLE: Comptuing with Register Machines
+
+Previous: [[file:sicp-4.org][4. Metalinguistic Abstraction]]
+
+# Next: N/A
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Global Functions</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">Global Functions</h1>
+<p>
+Previous: <a href="clbe-4.html">4. Input &amp; Output</a>
+</p>
+
+<p>
+Next: <a href="clbe-6.html">6. Blocks</a>
+</p>
+
+<p>
+In our earlier examples, we used some of Lisp’s built-in functions
+such as + (for addition), READ (for reading input) and FORMAT (for
+printing input). We will discuss how to define our own functions and
+also introduce some common functions for manipulating numbers and
+text.
+</p>
+
+<p>
+Global functions are defined with DEFUN with the below syntax. The *
+implies that multiple forms can be included in these parts. body-form
+denotes the body of the function, which is wrapped in an implicit
+BLOCK with the same name as function-name. Functions evaluate the
+expressions of their bodies in order and return the value of the last
+expression, unless exited earlier with RETURN-FROM. We will discuss
+BLOCK and RETURN-FROM in the next section.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-elisp">
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">function-name</span> (parameter*)
+  <span style="color: #8b2252;">"Optional documentation string."</span>
+  body-form*)
+
+</pre>
+</div>
+
+<p>
+An example of a function that multiplies the sum of two numbers by 10
+is below, together with its function call.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">multiply-sum-by-10</span> (x y)
+  <span style="color: #8b2252;">"Returns the sum of two numbers multiplied by 10"</span>
+  (* 10 (+ x y)))
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns 150</span>
+
+(multiply-sum-by-10 5 10)
+
+</pre>
+</div>
+
+<div id="outline-container-orgc48f120" class="outline-2">
+<h2 id="orgc48f120">Numerical Functions</h2>
+<div class="outline-text-2" id="text-orgc48f120">
+<p>
+Some of Lisp’s most basic functions are for arithmetic, e.g. (+ 3 3.0)
+for addition, (- 3 3.0) for subtraction, (* 3 3.0) for multiplication
+and (/ 3 3.0) for division. Numerical functions disregard type, i.e. 3
+and 3.0 are treated as equal and we can complete arithmetic operations
+on disparate numerical types such as integer and floating point
+numbers without error. We can compare numbers with the below
+functions. With two arguments, they perform the usual arithmetic
+comparison tests. With three or more arguments, they are useful for
+range checks.
+</p>
+
+<p>
+= /= (not) &lt; &gt; &lt;= &gt;=
+</p>
+
+
+<p>
+Below are examples of these functions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">x</span> 5)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">y</span> 4)
+
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns true as x between 0 and 5 inclusive</span>
+
+(&lt;= 0 x 5)
+
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns false as x not between 0 and 5 exclusive</span>
+
+(&lt; 0 x 5)
+
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns false as x &gt; y</span>
+
+(&lt; 0 x y 6)
+
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns true</span>
+
+(&lt; 0 y x 6)
+
+</pre>
+</div>
+
+<p>
+Two other useful functions are MAX and MIN. Finally, we can use ABS to
+return the absolute value of one number.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6f39080" class="outline-2">
+<h2 id="org6f39080">Text Functions</h2>
+<div class="outline-text-2" id="text-org6f39080">
+<p>
+We will now cover some useful functions for joining strings
+(CONCATENATE), retrieving their length (LENGTH), extracting a portion
+of a string (SUBSEQ) and searching within a string (SEARCH). The
+FORMAT function that we discussed earlier is very useful for
+constructing strings made up of smaller strings that we supply into
+the FORMAT function as arguments.
+</p>
+
+<p>
+Below are examples of joining and searching within a string and
+retrieving its length in characters. SEARCH will return the starting
+point of the term searched or NIL if not found.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(concatenate 'string <span style="color: #8b2252;">"Hello, "</span> <span style="color: #8b2252;">"world"</span> <span style="color: #8b2252;">". Today is good."</span>)
+
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns 6</span>
+
+(length <span style="color: #8b2252;">"Common"</span>)
+
+
+(search <span style="color: #8b2252;">"term"</span> <span style="color: #8b2252;">"the term is search within this string"</span>)
+
+</pre>
+</div>
+
+<p>
+SUBSEQ retrieves a portion of a string starting from a supplied
+starting position (indexed from 0) and an optional ending position
+(which is not included in the string):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns "Lisp"</span>
+
+(subseq <span style="color: #8b2252;">"Common Lisp"</span> 7 11)
+
+</pre>
+</div>
+
+<p>
+Below are comparison functions for strings. Replace STRING with CHAR
+in the below to get the equivalent character comparison functions.
+</p>
+
+<table>
+
+
+<colgroup>
+<col  class="org-left">
+
+<col  class="org-left">
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Case Sensitive</th>
+<th scope="col" class="org-left">Case Insensitive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">STRING=</td>
+<td class="org-left">STRING-EQUAL</td>
+</tr>
+
+<tr>
+<td class="org-left">STRING/=</td>
+<td class="org-left">STRING-NOT-EQUAL</td>
+</tr>
+
+<tr>
+<td class="org-left">STRING&lt;</td>
+<td class="org-left">STRING-LESSP</td>
+</tr>
+
+<tr>
+<td class="org-left">STRING&lt;=</td>
+<td class="org-left">STRING-NOT-GREATERP</td>
+</tr>
+
+<tr>
+<td class="org-left">STRING&gt;</td>
+<td class="org-left">STRING-GREATERP</td>
+</tr>
+
+<tr>
+<td class="org-left">STRING&gt;=</td>
+<td class="org-left">STRING-NOT-LESSP</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>
+Note on usage: A string A is less than a string B if in the first
+position in which they differ the character of A is less than the
+corresponding character of B according to the function CHAR&lt;, or if
+string a is a proper prefix of string B (of shorter length and
+matching in all the characters of A).
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

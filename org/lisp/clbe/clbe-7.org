@@ -1,0 +1,96 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Data Types
+
+Previous: [[file:clbe-6.org][6. Blocks]]
+
+Next: [[file:clbe-8.org][8. Conditionals]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+In the next two sections we will discuss conditionals and loops. To do
+so effectively, we need first briefly discuss data types and how Lisp
+handles boolean and logic.
+
+As a reminder, it is important to note that in Lisp, data objects are
+typed, not variables. Any variable can have any Lisp object as its
+value.
+
+Many Lisp objects belong to more than one type. The predicate TYPEP
+returns whether an object belongs to a given type, and the function
+TYPE-OF returns a type to which a given object belongs:
+
+#+begin_src lisp
+
+  ;; Returns true
+  
+  (typep "My String" 'string)
+
+  
+  ;; Returns (SIMPLE-ARRAY CHARACTER (9))
+
+  (type-of "My String")
+
+
+#+end_src
+As we learn later, strings are an array of characters. Examples of Type
+Predicate Functions include ATOM, NULL, ZEROP, NUMBERP, EVENP, LISTP,
+ARRAYP, PLUSP, CHARACTERP, ODDP, SYMBOLP, PACKAGEP, MINUSP, STRINGP 
+and ODDP.
+
+* Boolean & Logic
+
+The built-in types form a hierarchy of subtypes and supertypes. The
+symbol T (for truth) is the supertype of all types. We can express
+truth with any object other than NIL, the symbol for false:
+
+#+begin_src lisp
+
+  ;; Prints true
+  
+  (if 55 (print "True") (print "False"))
+
+#+end_src
+
+The function AND returns NIL if any of its arguments are false and
+returns the value of the last argument if all arguments are true.  The
+function OR returns the first argument that is true and NIL if no
+argument is true.
+
+#+begin_src lisp
+
+  ;; Returns 5
+  
+  (and t (+ 1 2) (* 1 5))
+
+  ;; Returns 3
+  
+  (or nil (+ 1 2) (* 1 5))
+
+#+end_src
+
+* Equality & Comparison
+
+Common Lisp has a few different functions for testing equality of two
+objects. Most beginners should use EQUAL for non-numbers and = for
+numbers. EQ compares equality of memory addresses and is the fastest
+test. It is useful to compare symbols quickly and to test whether two
+cons cells are physically the same object. It should not be used to
+compare numbers.
+
+EQL is like EQ except that it can safely compare numbers for numerical
+equality and type equality. It is the default equality test in many
+Common Lisp functions.
+
+EQUAL is a general purpose test that, in addition to being able to
+safely compare numbers like EQL, can safely compare lists on an
+element by element basis. Lists are not unique and EQ and EQL will
+fail to return equality on equivalent lists if they are stored in
+different memory addresses.
+
+EQUALP is a more liberal version of EQUAL. It ignores case
+distinctions in strings, among other things.
+
+= is the most efficient way to compare numbers, and the only way to
+compare numbers of disparate types, such as 3 and 3.0. It only accepts
+numbers.

@@ -1,0 +1,33 @@
+#+DATE: 31 July 2021
+
+#+TITLE: Useful Emacs Tips & Tricks
+
+This page contains an unordered (well ordered by time) collection of
+useful tips & tricks in Emacs, both for normal Emacs use but also
+for Common Lisp Developers. Hope you find it useful!
+
+** Local CLHS Access in Emacs (31 July 2021)
+
+Source: [[http://snowsyn.net/2020/01/01/local-clhs-access-in-emacs/][Nicolas Martyanoff Blog]]
+
+To look up the symbol at point, use =slime-documentation-lookup= 
+or =C-c C-d h=. To use a local copy of the HyperSpec, add something
+like the following to your =.emacs=:
+
+#+begin_src lisp
+
+(setq common-lisp-hyperspec-root
+      (concat "file://" (expand-file-name "~/folder-path/HyperSpec/")))
+
+;; Then one of the two following options to set eww as the browser
+;; for opening CLHS links:
+
+(setq browse-url-browser-function 'eww-browse-url)
+
+;; or to use the default browser for other links:
+
+(setq browse-url-browser-function
+      '(("hyperspec" . eww-browse-url)
+	("." . browse-url-default-browser)))
+
+#+end_src

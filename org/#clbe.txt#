@@ -1,0 +1,358 @@
+A deeper understanding of symbols and variables is useful as you progress to more advanced Lisp programs and we will aim to cover some of their detail here.
+
+* Internal Representation of Symbols
+
+Symbols are Lisp data objects that serve several purposes and have several interesting characteristics. Conceptually, a symbol is a block of five pointers. Internally, symbols are composed of five cells: the name, value, function, plist, and package cells. A symbol may have uppercase letters, lowercase letters, numbers, certain special characters or a mixture in its print name; it however cannot be a number.
+
+Symbols are unique, meaning there can be only one symbol in the
+computer’s memory with a given name. Every object in the memory has a
+numbered location, called its address. Since a symbol exists in only
+one place in memory, symbols have unique addresses.
+
+Every object of type symbol has a name, called its print name: Given a
+symbol, one can obtain its name in the form of a string. Conversely,
+given the name of a symbol as a string, one can obtain the symbol
+itself. (More precisely, symbols are organized into packages, and all
+the symbols in a package are uniquely identified by name).
+
+* Variables & Functions can share a symbol name
+
+Because symbols have separate function and value cells, we can have a variable and a function with the same name. Common Lisp determines whether a symbol refers to a function or a variable based on the context in which it appears.  If a symbol appears as the first element of a list that is
+to be evaluated, it is treated as a function name. In other contexts
+it is treated as a variable name.
+
+In the below example, the symbol CAR is associated with both the CAR
+function and the value “ROLLS-ROYCE”. Thus, the form (CAR '(A B C))
+will call the CAR function, which returns A. On the other hand, the
+form (LIST 'A 'NEW CAR) references the global variable CAR and
+produces the result (A NEW "ROLLS-ROYCE").
+
+Example of a Symbol with both Variable & Function assigned — Credits
+David David S. Touretzky, Common Lisp: A Gentle Introduction to
+Symbolic Computation
+
+
+
+
+21.3 What are Variables?  As noted at the start of this guide,
+variables are a place where a value is stored. Variables represent
+references to objects and assigning a variable a new value changes
+what object the variable refers to but has no effect on the previously
+referenced object. However, if a variable holds a reference to a
+mutable object, you can use that reference to modify the object, and
+the modification will be visible to any code that has a reference to
+the same object.
+
+Each time a function is called, Lisp creates new bindings to hold the
+arguments passed by the function's caller. A binding is the runtime
+manifestation of a variable. A single variable - the thing you can
+point to in the program's source code - can have many different
+bindings during a run of the program. A single variable can even have
+multiple bindings at the same time; parameters to a recursive
+function, for example, are rebound for each call to the function.
+
+Much of Lisp’s terminology for variables is a holdover from the days
+when dynamic scoping was the norm. For historical reasons some writers
+talk about ‘‘binding a variable’’ when they mean ‘‘creating a new
+variable.’’ But people also say ‘‘unbound variable’’ when they mean
+‘‘unassigned variable.’’ Binding does not refer strictly to
+assignment; that is one of the major sources of terminological
+confusion in Lisp. Non-global lexical variables always have values,
+but it is possible for global or special variables to exist without a
+value. We won’t get into the arcane details of that here.  21.4
+Interplay of Symbols & Variables Variables are named by symbols but
+they are not symbols themselves.  Symbols are related to variables in
+two very different ways:
+
+Special variables (i.e. global variables), such as those established
+by DEFVAR and DEFPARAMETER, are stored with a symbol with the same
+name. The value of the special variable is stored within the value
+cell of the symbol
+
+Lexical variables and lexical function definitions are also named by
+symbols, but here the symbol is only an object identifier, and not a
+“full symbol”. In this role, only the symbol’s name is significant and
+Common Lisp provides no operations on symbols that can have any effect
+on a lexical variable or a lexical function definition.
+
+Special Variables DEFVAR & DEFPARAMETER Lexical Variables & Functions
+LET, LET*, FLET, LABELS Variable are named by the symbol, whose value
+cell holds the variables value. A symbol evaluates to the value of the
+variable it holds.
+
+Any part of the program can access the variable by referencing the
+associated symbol that exists within the global Lisp user
+package. Hence, the variable is a global variable.  Variables are
+named by the symbol, but there is no local symbol that is holding the
+variable’s value. By compile time, this reference is translated to
+location in memory and there will be no trace of the symbol. Parts of
+the program outside of the lexical scope cannot reference the variable
+through its symbol name as no symbol is created within the global Lisp
+user package.
+
+
+21.5 Symbols & Property Lists (PLIST) Symbols have a component called
+the property list, or plist. By convention this is always a list whose
+even-numbered components (calling the first component zero) are
+symbols, here functioning as property names, and whose odd-numbered
+components are associated property values (either a value or a
+function, but not both). Functions are provided for manipulating this
+property list; in effect, these allow a symbol to be treated as an
+extensible record structure.
+
+The function GET is used to retrieve a value associated with a key in
+a symbol’s property list and we can use it in conjunction with SETF to
+set values: (get 'symbol-name 'my-key) ; Uses eql to compare keys
+
+(setf (get 'symbol-name 'my-key) 3) ; Set my-key to 3
+
+To illustrate these concepts, the below example associates a function
+with a plist key and then we retrieve and apply the function:
+
+(setf (get 'symbol-name 'my-key) (lambda (x) (+ x 100)))
+
+(funcall (get 'symbol-name 'my-key) 1) ; Returns 101
+
+22. Lambda
+Expressions As noted earlier, there are four types of compound forms
+evaluated by Lisp: special forms, macro forms, function forms and
+lambda forms. A lambda form is similar to a function form, except the
+function name is replaced by a lambda expression. As an example, the
+below two are equivalent. Lambda expressions can be used to utilise
+unnamed functions.
+
+Function Form Lambda Form (defun my-function (x) (+ x 100))
+
+(my-function 1) ; Returns 101 ((lambda (x) (+ x 100)) 1) ; Returns 101
+
+
+More specifically, a lambda expression is a list which can be used in
+place of a function name in certain contexts to denote a function by
+directly describing its behavior rather than indirectly by referring
+to the name of an established function. Its name derives from the fact
+that its first element is the symbol LAMBDA. The second element of a
+lambda expression must be an argument list and its remaining elements
+constitute the body of the function.
+
+In a slightly confusing manner, LAMBDA is also a Common Lisp
+macro. Depending on context, LAMBDA can refer either to the symbol
+LAMBDA or the macro LAMBDA. LAMBDA will be evaluated as a macro when
+it is the first element of a macro form. LAMBDA will be treated as a
+symbol when it is used as part of a lambda expression such as in the
+lambda form in the above table or as an argument to FUNCTION below.
+
+Below is an example of LAMBDA evaluated as a macro:
+
+(funcall (lambda (x) (+ x 100)) 1) ; Macro call
+
+The LAMBDA macro expands its arguments to (function (lambda …)). The
+above expression is expanded to:
+
+(funcall (function (lambda (x) (+ x 100))) 1) ; Returns 101
+ 
+We can supply lambda expressions as arguments to FUNCTION. Thus, in
+the above, LAMBDA refers to the symbol LAMBDA. The FUNCALL function
+above will evaluate the lambda form and returns 101.
+
+
+
+
+24. Further Reading
+
+We have come to the conclusion of this guide and I
+hope you found it enjoyable and useful. There are quite a few topics
+that are not covered in this guide, for example CLOS, the condition
+system and the LOOP macro. Further details on these concepts and also
+other concepts not covered in this guide can be found in the below
+resources.
+
+There is much more to learn in Lisp, our purpose today was simply to
+help you get started in your journey. I really believe Lisp is a
+beautiful and great language; I hope you do too.
+
+Common Lisp the Language, 2nd Edition
+http://www.cs.cmu.edu/Groups/AI/html/cltl/cltl2.html
+
+Common Lisp: A Gentle Introduction to Symbolic Computing
+http://www.cs.cmu.edu/%7Edst/LispBook/
+
+Practical Common Lisp http://www.gigamonkeys.com/book/
+
+Common Lisp Cookbook https://lispcookbook.github.io/cl-cookbook/
+
+Many More Resources (including links to various textbooks) are
+available on Reddit https://www.reddit.com/r/lisp/ 24.1 Contact
+Information Feel free to contact me for any feedback or comments for
+this guide. If you find it useful, do please star the github repo
+where it is uploaded, this helps me track the guide’s value and also
+increases its credibility in the eyes of others.
+
+Repo (please star it!)
+https://github.com/ashok-khanna/common-lisp-by-example
+
+My e-mail ashok.khanna@hotmail.com 25. Appendix: Glossary The below is
+an extract of the glossary of Common Lisp: A Gentle Introduction to
+Symbolic Computation by David S. Touretzky.
+
+
+Address: A number describing the location of an object in memory.
+
+Binding: An archaic term with conflicting uses. Essentially, binding
+means creating a variable and assigning it a value. See also
+rebinding.
+
+Block: A named sequence of Lisp expressions, forming the body of a
+BLOCK expression. Blocks may be exited using RETURN-FROM.
+
+Block name: A symbol serving as the name of a block. DO, DO*, DOTIMES
+and DOLIST create implicit blocks named NIL. Functions defined by
+DEFUN or LABELS surround their bodies with implicit blocks whose name
+is the same as the function.
+
+Body: The body of a form, such as a function definition or a LET,
+LABELS or DO expression, contains expressions to be evaluated
+sequentially within the lexical context of the form. Normally, the
+value of the last expression in the body is returned by the form.
+
+Clause: An element of a COND, AND, or OR conditional expression. A
+conditional can decide which of its clauses will be evaluated.
+
+Cons cell: The unit of computer memory from which lists are
+composed. Each cons cell holds two pointers, one in the CAR half, and
+one in the CDR half.
+
+Dot notation: A notation for writing lists in which cons cells are
+written as dotted pairs, that is, each cons cell is displayed as a CAR
+and CDR separated by a dot, enclosed in parentheses. The list (A (B)
+C) is written (A . ((B . NIL) . (C . NIL))) in dot notation. See also
+hybrid notation.
+
+Dotted list: A cons cell chain ending in an atom other than NIL. For
+example, (A B C . D) is a chain of three cons cells ending in the
+symbol D. This list must be written with a dot to show that the D is
+the CDR of the third cell, not the CAR of a fourth cell.
+
+Dotted pair: A single cons cell written in do notation. Usually the
+CAR is a non-NIL atom. A typical dotted pair is (A . B).
+
+Element: The elements of a list are the cars of its top-level cons
+cells, that is, the things that appear within only one level of
+parentheses.
+
+Function: Functions transform inputs to outputs. Lisp functions are
+defined with DEFUN. Lisp programs are organized as collections of
+functions.
+
+Function cell: One of the five components of a symbol. The function
+cell holds a pointer to the function object representing the global
+function named by that symbol. (Local functions created by LABELS do
+not reside in the function cell.)
+
+Function object: A piece of Lisp data that is a function, and can be
+applied to arguments. The representation of function objects is
+implementation dependent.
+
+Gensym: A symbol created automatically, with a name such as #:G0037,
+that is not registered in any package. Gensyms are often found in the
+expansions of complex macros such as SETF.
+
+Lambda: A marker indicating that a list is a lambda expression and is
+to be interpreted as a description of a function.
+
+Lambda-list keyword: A special symbol such as &OPTIONAL or &REST that
+has a special meaning when it appears in the argument list of a
+function.
+
+Lambda expression: A list that describes a function. Its first element
+must be the symbol LAMBDA, its second element must be an argument
+list, and its remaining elements constitute the body of the
+function. Lambda expressions must be quoted with #'. For example,
+#'(LAMBDA (N) (* N 2)).
+
+Lexical closure: A type of function. Lexical closures are created
+automatically by Lisp when functions passed as arguments to other
+functions need to remember their lexical context.
+
+Lexical scoping: A scoping discipline in which the only variables a
+function can see are those it defined itself, plus those defined by
+forms that contain the function, as when a function defined with DEFUN
+contains a lambda expression inside it.
+
+List: A chain of cons cells. One of the fundamental data structures of
+Lisp.
+
+Macro function: A special kind of function whose arguments are not
+evaluated. Macro functions must return Lisp expressions, which are
+then evaluated.
+
+Package: Packages are the name spaces in which symbols are
+registered. The default package is called USER. Lisp functions and
+variables are named by symbols in package Lisp.
+
+Package name: A character string giving the name of a package, such as
+USER. APROPOS takes a package name as an optional second argument.
+
+Pointer: A pointer to an object gives the address of that object in
+memory. Pointers are drawn as arrows in cons cell diagrams.
+
+Primitive: An elementary function that is built into Lisp, not defined
+by the user. CONS and + are primitives.
+
+Proper list: A cons cell chain ending in NIL. NIL is itself a proper
+list.
+
+Rebinding: Rebinding a special variable means creating a new dynamic
+variable with the same name, such as with LET. The name is then
+dynamically associated with the new variable when it appears anywhere
+in the program, and the old variable is inaccessible until the form
+that bound the new variable returns.
+
+Scope: The scope of an object is the region of the program in which
+the object can be referenced. For example, if a variable names the
+input to some function, the scope of the variable is limited to the
+body of that function. See also lexical scoping and dynamic scoping.
+
+Special form: See special function.
+
+Special function: A built-in function that does not evaluate its
+arguments. Special functions provide the primitive constructs, such as
+assignment, block structure, looping, and variable binding, from which
+the rest of Lisp is built. They do not return Lisp expressions to be
+evaluated, as macros do. Lisp programmers can create new macros, but
+they cannot create new special functions.
+
+Special variable: A dynamically scoped variable. When a name is
+declared special, all variables with that name will be dynamically
+scoped.
+
+String: A sequence of characters enclosed in double quotes, e.g. “Foo
+Bar”. Strings are vectors of character objects.
+
+Symbol: One of the fundamental Lisp datatypes. Internally, symbols are
+composed of five cells: the name, value, function, plist, and package
+cells. Besides serving as data, symbols also serve as names for
+things, such as functions, variables, types, and blocks.
+
+Symbol name: Symbols are named by character strings. Each symbol
+contains a name cell that holds a pointer to the character string that
+is the symbol’s name.
+
+Type system: The set of datatypes a language offers, and their
+organization. The Lisp type system includes type predicates, a TYPE-OF
+function for generating type descriptions, and a facility for creating
+new datatypes with DEFSTRUCT.
+
+Unassigned variable: A variable that has no value.
+
+Unbound variable: See unassigned variable. ‘‘Unbound’’ is an archaic
+term for ‘‘unassigned’’.
+
+Value cell: A cell in the internal representation of a symbol where
+Lisp keeps the value of the global lexical variable (or the currently
+accessible dynamic variable) named by that symbol.
+
+Variable: A place where a value is stored. Ordinary variables are
+named by symbols. Generalized variables are named by place
+descriptions, which may be Lisp expressions.
+
+Vector: A one-dimensional array.

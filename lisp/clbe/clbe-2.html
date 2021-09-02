@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Symbols &amp; Data Objects</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">Symbols &amp; Data Objects</h1>
+<p>
+Previous: <a href="clbe-1.html">1. Introduction</a>
+</p>
+
+<p>
+Next: <a href="clbe-3.html">3. Global Variables &amp; Assignment</a>
+</p>
+
+<p>
+We mentioned symbols in passing earlier but it is worth expanding on
+them a bit more here. Symbols are fully fledged objects in Lisp and we
+will discuss them in depth later. For our current purposes however we
+will focus on their role as names for objects. All variables and
+functions are named by a symbol, and so are special forms and macros.
+</p>
+
+<p>
+When we enter any non-numeric code that is not a quoted string in
+Lisp, we are generally entering in a symbol. Lisp will then look up
+the symbol in a global table and retrieve the relevant object for
+evaluation. You can start to see the consistency of the language. Lisp
+extracts the first element of each form it receives, and looks up the
+symbol named by this element to get the appropriate evaluation
+rule. It then applies this evaluation rule to the form.  2.1 Variables
+Lisp has a unique approach to variables and data objects. Variables
+are a place in computer memory that hold a pointer to a data
+object. Assigning a variable a new value will change what object the
+variable points to, but has no effect on the previously referenced
+object. That said, if a variable holds a reference to a mutable
+object, we can use that reference to modify that object and the
+modification will be visible to any code that also has a reference to
+the same object.
+</p>
+
+<p>
+Variables themselves do not have a type, it is the underlying data
+object that is typed. A variable can have any Lisp object as its
+value. Lisp is accordingly a dynamically-typed language.
+</p>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lambda Expressions</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">Lambda Expressions</h1>
+<p>
+Previous: <a href="clbe-21.html">21. Symbols &amp; Variables</a>
+</p>
+
+<p>
+Next: <a href="clbe-23.html">23. Further Reading</a>
+</p>
+
+<p>
+As noted earlier, there are four types of compound forms evaluated by
+Lisp: special forms, macro forms, function forms and lambda forms. A
+lambda form is similar to a function form, except the function name is
+replaced by a lambda expression. As an example, the below two are
+equivalent. Lambda expressions can be used to utilise unnamed
+functions.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Function Form</span>
+
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">my-function</span> (x)
+  (+ x 100))
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns 101</span>
+
+(my-function 1)
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Lambda Form</span>
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Also returns 101</span>
+
+((<span style="color: #a020f0;">lambda</span> (x)
+   (+ x 100))
+ 1)
+
+</pre>
+</div>
+
+<p>
+More specifically, a lambda expression is a list which can be used in
+place of a function name in certain contexts to denote a function by
+directly describing its behavior rather than indirectly by referring
+to the name of an established function. Its name derives from the fact
+that its first element is the symbol LAMBDA. The second element of a
+lambda expression must be an argument list and its remaining elements
+constitute the body of the function.
+</p>
+
+<p>
+In a slightly confusing manner, LAMBDA is also a Common Lisp
+macro. Depending on context, LAMBDA can refer either to the symbol
+LAMBDA or the macro LAMBDA. LAMBDA will be evaluated as a macro when
+it is the first element of a macro form. LAMBDA will be treated as a
+symbol when it is used as part of a lambda expression such as in the
+lambda form in the above table or as an argument to FUNCTION below.
+</p>
+
+<p>
+Below is an example of LAMBDA evaluated as a macro:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Macro call</span>
+
+(funcall (<span style="color: #a020f0;">lambda</span> (x)
+           (+ x 100))
+         1)
+
+</pre>
+</div>
+
+<p>
+The LAMBDA macro expands its arguments to (function (lambda …)). The
+above expression is expanded to:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns 101</span>
+
+(funcall (function (<span style="color: #a020f0;">lambda</span> (x)
+           (+ x 100)))
+         1)
+
+</pre>
+</div>
+
+<p>
+We can supply lambda expressions as arguments to FUNCTION. Thus, in
+the above, LAMBDA refers to the symbol LAMBDA. The FUNCALL function
+above will evaluate the lambda form and returns 101.
+</p>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

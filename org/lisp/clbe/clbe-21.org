@@ -1,0 +1,140 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Symbols & Variables
+
+Previous: [[file:clbe-20.org][20. Packages]]
+
+Next: [[file:clbe-22.org][22. Lambda Expressions]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+A deeper understanding of symbols and variables is useful as you
+progress to more advanced Lisp programs and we will aim to cover some
+of their detail here.
+
+* * Internal Representation of Symbols
+
+Symbols are Lisp data objects that serve several purposes and have
+several interesting characteristics. Conceptually, a symbol is a block
+of five pointers. Internally, symbols are composed of five cells: the
+name, value, function, plist, and package cells. A symbol may have
+uppercase letters, lowercase letters, numbers, certain special
+characters or a mixture in its print name; it however cannot be a
+number.
+
+Symbols are unique, meaning there can be only one symbol in the
+computer’s memory with a given name. Every object in the memory has a
+numbered location, called its address. Since a symbol exists in only
+one place in memory, symbols have unique addresses.
+
+Every object of type symbol has a name, called its print name: Given a
+symbol, one can obtain its name in the form of a string. Conversely,
+given the name of a symbol as a string, one can obtain the symbol
+itself. (More precisely, symbols are organized into packages, and all
+the symbols in a package are uniquely identified by name).
+
+* Variables & Functions can share a symbol name
+
+Because symbols have separate function and value cells, we can have a
+variable and a function with the same name. Common Lisp determines
+whether a symbol refers to a function or a variable based on the
+context in which it appears.  If a symbol appears as the first element
+of a list that is to be evaluated, it is treated as a function
+name. In other contexts it is treated as a variable name.
+
+* What are Variables?
+
+As noted at the start of this guide, variables are a place where a
+value is stored. Variables represent references to objects and
+assigning a variable a new value changes what object the variable
+refers to but has no effect on the previously referenced
+object. However, if a variable holds a reference to a mutable object,
+you can use that reference to modify the object, and the modification
+will be visible to any code that has a reference to the same object.
+
+Each time a function is called, Lisp creates new bindings to hold the
+arguments passed by the function's caller. A binding is the runtime
+manifestation of a variable. A single variable - the thing you can
+point to in the program's source code - can have many different
+bindings during a run of the program. A single variable can even have
+multiple bindings at the same time; parameters to a recursive
+function, for example, are rebound for each call to the function.
+
+Much of Lisp’s terminology for variables is a holdover from the days
+when dynamic scoping was the norm. For historical reasons some writers
+talk about ‘‘binding a variable’’ when they mean ‘‘creating a new
+variable.’’ But people also say ‘‘unbound variable’’ when they mean
+‘‘unassigned variable.’’ Binding does not refer strictly to
+assignment; that is one of the major sources of terminological
+confusion in Lisp. Non-global lexical variables always have values,
+but it is possible for global or special variables to exist without a
+value. We won’t get into the arcane details of that here.  21.4
+Interplay of Symbols & Variables Variables are named by symbols but
+they are not symbols themselves.  Symbols are related to variables in
+two very different ways:
+
+Special variables (i.e. global variables), such as those established
+by DEFVAR and DEFPARAMETER, are stored with a symbol with the same
+name. The value of the special variable is stored within the value
+cell of the symbol.
+
+Lexical variables and lexical function definitions are also named by
+symbols, but here the symbol is only an object identifier, and not a
+“full symbol”. In this role, only the symbol’s name is significant and
+Common Lisp provides no operations on symbols that can have any effect
+on a lexical variable or a lexical function definition.                    |                               |
+
+- Special Variables (DEFVAR & DEFPARAMETER): Variable are named by the symbol, whose value
+cell holds the variables value. A symbol evaluates to the value of the
+variable it holds. Any part of the program can access the variable by referencing the
+associated symbol that exists within the global Lisp user
+package. Hence, the variable is a global variable.
+
+- Lexical Variables & Functions (LET, LET*, FLET, LABELS): Variables are named by the symbol, but there is no local symbol that is holding the
+variable’s value. By compile time, this reference is translated to
+location in memory and there will be no trace of the symbol. Parts of
+the program outside of the lexical scope cannot reference the variable
+through its symbol name as no symbol is created within the global Lisp
+user package.
+
+
+* Symbols & Property Lists (PLIST)
+
+Symbols have a component called the property list, or plist. By
+convention this is always a list whose even-numbered components
+(calling the first component zero) are symbols, here functioning as
+property names, and whose odd-numbered components are associated
+property values (either a value or a function, but not
+both). Functions are provided for manipulating this property list; in
+effect, these allow a symbol to be treated as an extensible record
+structure.
+
+The function GET is used to retrieve a value associated with a key in
+a symbol’s property list and we can use it in conjunction with SETF to
+set values:
+
+#+begin_src lisp
+
+  ;; Uses eql to compare keys
+  
+  (get 'symbol-name 'my-key)
+
+  ;; Set my-key to 3
+  
+  (setf (get 'symbol-name 'my-key) 3)
+
+#+end_src
+
+To illustrate these concepts, the below example associates a function
+with a plist key and then we retrieve and apply the function:
+
+#+begin_src lisp
+
+  (setf (get 'symbol-name 'my-key)
+	(lambda (x) (+ x 100)))
+
+  ;; Returns 101
+
+  (funcall (get 'symbol-name 'my-key) 1)
+
+#+end_src

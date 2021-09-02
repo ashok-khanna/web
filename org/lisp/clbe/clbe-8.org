@@ -1,0 +1,74 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Conditionals
+
+Previous: [[file:clbe-7.org][7. Data Types]]
+
+Next: [[file:clbe-9.org][9. Basic Loops]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+The five main conditionals in Common Lisp are IF, WHEN, UNLESS, COND
+and CASE. Conditionals with an implicit PROGN block allow for multiple
+forms within their bodies. To begin with an example of IF form (note
+there is no implicit PROGN):
+
+
+#+begin_src lisp
+
+  (if (equal 5 (+ 1 4))
+      (print "This is true")
+      (print "This if false"))
+
+#+end_src
+
+Example of WHEN form (note there is an implicit PROGN):
+
+#+begin_src lisp
+
+  (when (equal 5 (+ 1 4))
+    (print "Print if statement is true")
+    (print "Print this also"))
+
+#+end_src
+
+Example of UNLESS form (note there is an implicit PROGN):
+
+#+begin_src lisp
+
+  (unless (equal 3 (+ 1 4))
+    (print "Only print if condition is false")
+    (print "Print this also"))
+
+#+end_src
+
+Example of COND form (multiple ifs, implicit PROGN). The form exits on
+the first true:
+	
+#+begin_src lisp
+
+  (cond ((equal 5 3) (print "This will not print"))
+	((equal 5 5) (print "This will print"))
+	((equal 5 5)
+	 (print "This will not print as the")
+	 (print "form exited at first true")))
+
+#+end_src
+
+Example of a CASE form (multiple ifs on the one variable, implicit
+PROGN). Cases are literal not evaluated. The form exits on the first true:
+
+#+begin_src lisp
+
+  ;; Try entering in 9 and then (* 3 3)
+  ;; at the read prompt. Then try entering 0
+  
+  (case (read)
+     ((1 3 5 7 9 (* 3 3)) "Odd")
+    (* 3 3)
+    (0 ; Note implicit PROGN here
+     (print "Zero")
+     (print "Number"))
+    (otherwise "Not a odd number < 10"))
+
+#+end_src

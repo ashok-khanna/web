@@ -1,0 +1,105 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Input & Output
+
+Previous: [[file:clbe-3.org][3. Global Variables & Assignment]]
+
+Next: [[file:clbe-5.org][5. Global Functions]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+The second important side-effect after assignment is input &
+output. To write meaningful programs we need to be able to accept user
+input and provide output to the user. In this section, we cover the
+basic functions to read & print to a screen. Later in the guide we
+will cover the useful functions of reading & writing to a file.
+
+* Lisp Reader
+
+The READ function takes characters from a stream, interprets them as a
+printed representation of a Lisp object, builds a Lisp object and
+finally returns it as the value of the function. The collection of
+routines that does this is called the (Lisp) reader. There are three
+primary variations of the Lisp reader:
+
+The function READ is used to parse input into Lisp objects and reads
+exactly one expression, regardless of newlines
+
+The function READ-LINE reads all characters up to a newline, returning
+a string
+
+The function READ-FROM-STRING takes a string and returns the first
+expression from it
+
+Below are some examples you can experiment with.
+
+#+begin_src lisp
+
+  (defparameter my-variable nil)
+
+  (setf my-variable (read-line))
+
+  (setf my-variable (read))
+
+  (setf my-variable (read-from-string "(1 2 3)"))
+
+#+end_src
+
+* Lisp Printer
+
+Functions such as PRINT take a Lisp object and send the
+characters of its printed representation to a stream. The collection
+of routines that does this is known as the (Lisp) printer. PRIN1 and
+PRINT are used to generate output useful for programs (the latter adds
+a newline to the output whilst the former does not). PRINC is used for
+output for people. TERPRI prints a newline.  The FORMAT function is
+the most commonly used printer in Lisp. Its syntax is as follows.
+
+#+BEGIN_SRC elisp
+
+  (format destination control-string optional-arguments*)
+    
+  #+END_SRC
+
+The first argument of the FORMAT function is the destination where the
+output will be printed. A value of T will send the out to the stream
+*​standard-output​* (typically the main screen of your Lisp system)
+whilst NIL here will return the output as a string. We can
+alternatively supply a stream pointing to a file in our file system,
+and this is how we use FORMAT to write to files (we will discuss this
+later in this guide).
+ 
+The second argument of the FORMAT function is the string that we want
+to print. However, we can enter directives (preceded by ~) to add
+complex behaviour to the string, such as printing newlines (~%)
+(i.e. TERPRI) or for inserting the printed representation of Lisp
+objects into the string (~A to print as PRINC, i.e. output for people
+and ~S to print as PRIN1, i.e. output suitable as input for the READ
+function).
+ 
+The third (optional) argument of the FORMAT function is the arguments
+we want to supply to the control string. Each ~A or ~S in the
+control-string takes a successive argument from here and places it
+into the string.
+
+This is best illustrated by the following examples. Note how Bob is
+quoted in the second example as the printed representation of Lisp
+strings includes quotes.
+
+#+begin_src lisp
+
+  ;; Prints to screen: Dear Bob, How are you?
+
+  (format t "Dear ~A, ~% How are you?" "Bob")
+
+
+  ;; Prints to screen: Dear "Bob", How are you?
+
+  (format t "Dear ~S, How are you?" "Bob")
+
+
+  ;; Returns "Number is: 3" (a string)
+
+  (format nil "~A ~A" "Number is:" (+ 1 2))
+
+#+end_src

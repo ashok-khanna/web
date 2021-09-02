@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scope &amp; Extent</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">Scope &amp; Extent</h1>
+<p>
+Previous: <a href="clbe-18.html">18. Advanced Looping</a>
+</p>
+
+<p>
+Next: <a href="clbe-20.html">20. Packages</a>
+</p>
+
+<p>
+We will briefly introduce and discuss the concepts of scope and
+extent. Before we begin, as a general rule, local variables and
+functions (defined by LET, LET*, LABELS, FLET) can only be accessed
+within their closures, whilst global names (defined by DEFVAR,
+DEFPARAMETER, DEFCONSTANT, DEFUN) are accessible everywhere.
+</p>
+
+<p>
+It is best practice to avoid using the same names for local and global
+variables and functions.
+</p>
+
+<p>
+Scope refers to the textual region of the program within which
+references may occur, whilst extent refers to the interval of time
+during which references may occur. For example, the scope of the
+parameter X in the below is the body of the DEFUN form and its extent
+is the interval from the time the function is invoked to the time it
+is exited:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">copy-cell</span> (x)
+  (cons (car x)
+        (cdr x)))
+
+</pre>
+</div>
+
+<p>
+Accordingly, there are four permutations of scope and extent as listed
+below.
+</p>
+
+<ol class="org-ol">
+<li>Lexical scope: Here references to the established entity can occur
+only within certain program portions that are lexically (that is,
+textually) contained within the establishing construct. Typically the
+construct will have a part designated the body, and the scope of all
+entities established will be (or include) the body.</li>
+
+<li>Indefinite scope: References may occur anywhere, in any program.</li>
+
+<li>Dynamic extent: References may occur at any time in the interval
+between establishment of the entity and the explicit disestablishment
+of the entity. As a rule, the entity is disestablished when execution
+of the establishing construct completes or is otherwise terminated.</li>
+
+<li>Indefinite extent: The entity continues to exist as long as the
+possibility of reference remains. (An implementation is free to
+destroy the entity if it can prove that reference to it is no longer
+possible. Garbage collection strategies implicitly employ such
+proofs.)</li>
+</ol>
+
+<p>
+Variable bindings and bindings of local function names have lexical
+scope and indefinite extent, whilst bindings declared to be special
+(such as DEFVAR and DEFPARAMETER) have “dynamic scope” (indefinite
+scope and dynamic extent). Named constants such as NIL and PI have
+indefinite scope and indefinite extent.
+</p>
+
+<p>
+The binding rule for dynamic scope in Lisp is as follows: a use of a
+name is bound to the most recent declaration of that name that is
+still live (i.e. we first look for a local definition of a variable,
+if it isn’t found, we look up the calling stack for a definition).
+</p>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Variables &amp; Functions</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">Local Variables &amp; Functions</h1>
+<p>
+Previous: <a href="clbe-9.html">9. Basic Loops</a>
+</p>
+
+<p>
+Next: <a href="clbe-11.html">11. A Brief Detour - Code Formatting</a>
+</p>
+
+<div id="outline-container-orga16f59f" class="outline-2">
+<h2 id="orga16f59f">Local Variables</h2>
+<div class="outline-text-2" id="text-orga16f59f">
+<p>
+LET and LET* are special operators that allow us to create local
+variables that can only be accessed within their closures. LET binds
+its variables in parallel such that you cannot refer to another
+variable in the LET form when setting the value of another. LET* binds
+its variables in sequentially, so thatyou can refer to the value of
+any previously bound variables. This is useful when you want to assign
+names to several intermediate steps in a long computation.
+</p>
+
+<p>
+The LET form has the following syntax:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-elisp">
+(<span style="color: #a020f0;">let</span> ((var-1 value-1)
+      ...
+      (var-n value-n))
+  body-form*)
+
+</pre>
+</div>
+
+<p>
+An example of LET* in use:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Prints 10</span>
+
+(<span style="color: #a020f0;">let*</span> ((x 5)
+       (y (+ x x)))
+  (print y))
+
+</pre>
+</div>
+
+<p>
+As a general note on assignment, it is good programming style to avoid
+changing the value of local variables after they have been set. This
+makes our programs easier to follow as we do not need to track any
+changes in the values of our local variables. Thus, we should only use
+SETF on global variables and not alter variables created by LET and
+LET* forms within their closures.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4269869" class="outline-2">
+<h2 id="org4269869">Local Functions</h2>
+<div class="outline-text-2" id="text-org4269869">
+<p>
+Functions named by DEFUN are global functions that can be accessed
+anywhere. We can define local functions through FLET and LABELS, which
+are only accessible within their context. The scope of the functions
+in a FLET form is limited to the body of the form and function
+definitions are not visible to other functions defined by the FLET
+form. LABELS is equivalent to FLET except that the scope of the
+defined function names for LABELS encompasses the function definitions
+themselves as well as the body. Practically this means LABELS allows
+you to write recursive functions. The syntax of LABELS is:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">labels</span> ((fn-1 args-1 body-1)
+         ...
+         (fn-n args-n body-n))
+  body-form*)
+
+</pre>
+</div>
+
+<p>
+Functions defined within LABELS take a similar format to a DEFUN
+form. Within the body of the LABELS form, function names matching
+those defined by the LABELS refer to the locally defined functions
+rather than any global functions with the same names. Below is an
+example of a LABELS form that will return 12, the result of (+ 2 4 6),
+where 2, 4 and 6 are the results of evaluating the three local
+functions defined in the form.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Returns 12</span>
+
+(<span style="color: #a020f0;">labels</span> ((first-function (x) (+ x x))
+         (second-function (y) (* y y))
+         (third-function (z) (first-function z)))
+  (+ (first-function 1)
+     (second-function 2)
+     (third-function 3))) 
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

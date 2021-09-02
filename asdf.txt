@@ -1,0 +1,556 @@
+;; Emacs Settings of Ashok Khanna
+;; Last updated 23 January 2021
+
+
+;; 1.0 Basic Settings:
+
+(setq default-directory "~/")                  ;; Ensure starting directory in buffer is correct
+(setq command-line-default-directory "~/")     ;; Ensure starting directory in buffer is correct
+(add-to-list 'exec-path' "/user/local/bin")    ;; Ensure Emacs works well with MacOS
+(setq-default left-fringe-width  10)
+(setq-default right-fringe-width 10)
+(set-face-attribute 'fringe nil :background nil)
+(delete-selection-mode 1)
+(setq column-number-mode t)                    ;; Shows column number in buffer
+(setq scroll-conservatively 101)               ;; Continuous scrolling
+(setq pop-up-windows nil)                      ;; Prevents slime from opening up in a pop-up
+(toggle-scroll-bar -1)
+(setq inhibit-startup-screen t)                ;; Prevents default startup page from appearing
+(setq org-startup-folded nil)                  ;; Prevent org-mode from auto collapsing headers
+(find-file "~/scratch.org")                    ;; Opens scratch.org on startup (do it after org settings)
+
+(setq-default cursor-type 'bar)                ;; Change cursor type
+(blink-cursor-mode 0)
+
+(setq delete-by-moving-to-trash t)
+
+(load "auctex.el" nil t t)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((latex . t)))
+
+(add-to-list 'default-frame-alist '(background-color . "wheat1"))
+
+(set-face-attribute 'fringe nil :background "wheat1")
+
+;; https://emacs.stackexchange.com/questions/15009/delete-files-to-trash-on-os-x
+
+(if (eq system-type 'darwin)
+    (setq trash-directory "~/.Trash"))
+
+
+(set-frame-font "Courier New 14" nil t)
+
+(setq backup-directory-alist '(("" . "~/.emacs.d/backup")))
+
+(setq slime-enable-evaluate-in-emacs t)
+
+;; 2.0 Package Load Settings:
+
+(require 'package)
+
+(autoload 'enable-paredit-mode "paredit"
+  "Turn on pseudo-structural editing of Lisp code."
+  t)
+(add-hook 'emacs-lisp-mode-hook       'enable-paredit-mode)
+(add-hook 'lisp-mode-hook             'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
+(add-hook 'scheme-mode-hook           'enable-paredit-mode)
+(add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
+(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+
+(add-to-list 'package-archives                 ;; Helps with issues on my Mac with Melpa
+	     '("melpa3" .
+	       "http://www.mirrorservice.org/sites/stable.melpa.org/packages/"))
+(package-initialize)
+
+;; 3.0 Package Use Settings:
+
+(load (expand-file-name "~/.quicklisp/slime-helper.el"))
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+
+
+(setq org-babel-default-header-args '((:tangle . "yes")))
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages '((lisp . t)))
+
+(use-package graphviz-dot-mode
+  :ensure t
+  :config
+  (setq graphviz-dot-indent-width 4))
+
+(use-package company-graphviz-dot)
+
+
+;; 4.0 Key Bindings
+
+
+(global-set-key (kbd "M-T") (lambda () (interactive) (transpose-sexps -1)))
+(global-set-key (kbd "M-c") (lambda () (interactive) (paredit-convolute-sexp)))
+(global-set-key (kbd "M-D") (lambda () (interactive) (paredit-backward-kill-word)))
+(global-set-key (kbd "C-S-k") (lambda () (interactive) (backward-kill-sexp)))
+
+(global-set-key (kbd "<home>") 'beginning-of-line)
+(global-set-key (kbd "<end>") 'end-of-line)
+
+(global-set-key (kbd "C-z") 'undo)
+(global-set-key (kbd "C-x C-z") nil)
+
+(global-set-key (kbd "C-c z") (lambda ()
+				(interactive)
+				(insert-char ?\u200b)))
+
+(define-key slime-mode-map (kbd "<tab>") 'slime-complete-symbol)
+
+(define-key slime-repl-mode-map (kbd "M-s") 'paredit-splice-sexp)
+
+(define-key slime-repl-mode-map (kbd "C-d") 'paredit-forward-delete)
+
+(global-set-key (kbd "C-c h") 'slime-documentation-lookup)
+
+(global-set-key (kbd "C-?") 'help-command)
+(global-set-key (kbd "M-?") 'mark-paragraph)
+;; (global-set-key (kbd "C-h") 'delete-backward-char)
+(global-set-key (kbd "M-h") 'backward-kill-word)
+
+(load "~/lisp/math-mode.el")
+
+;; (load "/Users/ashokkhanna/math-dev/math-mode-lisp.el")
+
+(setq browse-url-browser-function 'eww-browse-url)
+
+(setq common-lisp-hyperspec-root
+      (concat "file://" (expand-file-name "~/lisp-notes/Resources/HyperSpec-7-0 3/HyperSpec/")))
+
+;; (setq display-buffer-alist '(("\\*slime" (display-buffer-same-window))))
+
+;; (setq display-buffer-alist '((".*\\*shell\\*.*" display-buffer-same-window (nil))))
+
+;; 5.0 List of Installed Packages:
+		
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default default default italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#2e3436" "#a40000" "#4e9a06" "#c4a000" "#204a87" "#5c3566" "#729fcf" "#eeeeec"])
+ '(blink-cursor-mode nil)
+ '(column-number-mode t)
+ '(completion-auto-help 'lazy)
+ '(custom-enabled-themes nil)
+ '(display-time-mode t)
+ '(org-export-backends '(ascii html icalendar latex md odt))
+ '(package-selected-packages
+   '(graphviz-dot-mode auctex-latexmk undo-tree golden-ratio-scroll-screen ox-gfm window-layout htmlize poly-org package-lint free-keys clhs git-commit magit paredit slime-company unicode-math-input use-package))
+ '(scheme-program-name "mit-scheme")
+ '(tool-bar-mode nil))
+
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(table-cell ((t (:background "gray75" :foreground "dark blue" :inverse-video nil)))))
+
+
+(require 'erc)
+(require 'tls)
+(defun start-irc () "Connect to IRC." (interactive)
+(erc-tls :server "irc.libera.chat" :port 6697 :nick "RentGreat8009" :full-name "Your Name"))
+
+(setq  erc-hide-list '("JOIN" "PART" "QUIT"))
+
+
+
+
+;; (global-set-key (kbd "C-c m") #'(lambda ()
+;; 				  (interactive)
+;; 				  (info "elisp")))
+
+
+;; (global-set-key (kbd "q") (message "lol"))
+
+(defun top-10-buffers ()
+  (interactive)
+  (lexical-let ((buffer-list (buffer-list)))
+    (pop-to-buffer-same-window "My Buffer List")
+    (erase-buffer)
+    (insert "Top 10 Buffers \n")
+    (insert "-------------- \n")
+    (loop for item in buffer-list
+	  for index from 0 to 9
+	  do (insert (format "    [%s]  %s~\n" index item)))
+    (special-mode)
+    (use-local-map (copy-keymap special-mode-map))
+    (loop for item in buffer-list
+	  for index from 0 to 9
+	  do (local-set-key (format "%s" index) `(lambda ()
+						   (interactive)
+						   (switch-to-buffer ',item))))
+    (local-set-key (format "%s" index) #'(lambda ()
+					   (interactive)
+					   (switch-to-buffer (nth 0 buffer-list))))))
+
+(global-set-key (kbd "C-c b") 'top-10-buffers)
+
+;;; math-mode.el
+
+;; 1.0 Dependencies - > - > - > - >
+
+(require 'cl-lib)
+(require 'hydra)
+
+
+;; 2.0 Hydra Keybindings - > - > - > - >
+
+;; Hydra - Lower Case
+
+(defhydra math-lowercase (:color blue :columns 6)
+  "Select your symbol below (also try C-c n)"
+  ("a" (lambda () (interactive) (insert "α")) "α")
+  ("b" (lambda () (interactive) (insert "β")) "β")
+  ("c" (lambda () (interactive) (insert "∊")) "∊")
+  ("d" (lambda () (interactive) (insert "δ")) "δ")
+  ("e" (lambda () (interactive) (insert "ε")) "ε")
+  ("f" (lambda () (interactive) (insert "φ")) "φ")
+  ("g" (lambda () (interactive) (insert "γ")) "γ")
+  ("h" (lambda () (interactive) (insert "θ")) "θ")
+  ("i" (lambda () (interactive) (insert "ι")) "ι")
+  ("j" (lambda () (interactive) (insert "ξ")) "ξ")
+  ("k" (lambda () (interactive) (insert "κ")) "κ")
+  ("l" (lambda () (interactive) (insert "λ")) "λ")
+  ("m" (lambda () (interactive) (insert "μ")) "μ")
+  ("n" (lambda () (interactive) (insert "η")) "η")
+  ("o" (lambda () (interactive) (insert "ο")) "ο")
+  ("p" (lambda () (interactive) (insert "π")) "π")
+  ("r" (lambda () (interactive) (insert "ρ")) "ρ")
+  ("s" (lambda () (interactive) (insert "σ")) "σ")
+  ("t" (lambda () (interactive) (insert "τ")) "τ")
+  ("u" (lambda () (interactive) (insert "υ")) "υ")
+  ("v" (lambda () (interactive) (insert "ν")) "ν")
+  ("w" (lambda () (interactive) (insert "ω")) "ω")
+  ("x" (lambda () (interactive) (insert "χ")) "χ")
+  ("y" (lambda () (interactive) (insert "ψ")) "ψ")
+  ("z" (lambda () (interactive) (insert "ζ")) "ζ")
+  ("," (lambda () (interactive) (insert "≤")) "≤")
+  ("." (lambda () (interactive) (insert "≥")) "≥")
+  ("=" (lambda () (interactive) (insert "≠")) "≠")
+  ("-" (lambda () (interactive) (insert "±")) "±")
+  ("0" (lambda () (interactive) (insert "∅")) "∅")
+  ("1" (lambda () (interactive) (insert "→")) "→")
+  ("2" (lambda () (interactive) (insert "↔")) "↔")
+  ("3" (lambda () (interactive) (insert "↦")) "↦")
+  ("4" (lambda () (interactive) (insert "↑")) "↑")
+  ("5" (lambda () (interactive) (insert "↓")) "↓")
+  ("6" (lambda () (interactive) (insert "↗")) "↗")
+  ("7" (lambda () (interactive) (insert "↘")) "↘")
+  ("8" (lambda () (interactive) (insert "∞")) "∞")
+  ("9" (lambda () (interactive) (insert "⋯")) "⋯")
+  ("q" nil "cancel"))
+
+;; Hydra - Upper Case
+
+(defhydra math-uppercase (:color blue :columns 6)
+  "Select your symbol below (also try C-c m)"
+  ("a" (lambda () (interactive) (insert "∀")) "∀")
+  ("b" (lambda () (interactive) (insert "∃")) "∃")
+  ("c" (lambda () (interactive) (insert "ℂ")) "ℂ")
+  ("d" (lambda () (interactive) (insert "Δ")) "Δ")
+  ("e" (lambda () (interactive) (insert "∈")) "∈")
+  ("f" (lambda () (interactive) (insert "Φ")) "Φ")
+  ("g" (lambda () (interactive) (insert "Γ")) "Γ")
+  ("h" (lambda () (interactive) (insert "Θ")) "Θ")
+  ("i" (lambda () (interactive) (insert "∫")) "∫")
+  ("j" (lambda () (interactive) (insert "∂")) "∂")
+  ("k" (lambda () (interactive) (insert "⊢")) "⊢")
+  ("l" (lambda () (interactive) (insert "Λ")) "Λ")
+  ("m" (lambda () (interactive) (insert "∄")) "∄")
+  ("n" (lambda () (interactive) (insert "ℕ")) "ℕ")
+  ("o" (lambda () (interactive) (insert "⊕")) "⊕")
+  ("p" (lambda () (interactive) (insert "Π")) "Π")
+  ("r" (lambda () (interactive) (insert "ℝ")) "ℝ")
+  ("s" (lambda () (interactive) (insert "Σ")) "Σ")
+  ("t" (lambda () (interactive) (insert "∴")) "∴")
+  ("u" (lambda () (interactive) (insert "∵")) "∵")
+  ("v" (lambda () (interactive) (insert "√")) "√")
+  ("w" (lambda () (interactive) (insert "Ω")) "Ω")
+  ("x" (lambda () (interactive) (insert "∊")) "∊")
+  ("y" (lambda () (interactive) (insert "Ψ")) "Ψ")
+  ("z" (lambda () (interactive) (insert "ℤ")) "ℤ")
+  ("," (lambda () (interactive) (insert "¬")) "¬")
+  ("." (lambda () (interactive) (insert "≡")) "≡")
+  ("=" (lambda () (interactive) (insert "≈")) "≈")
+  ("-" (lambda () (interactive) (insert "≠")) "≠")
+  ("0" (lambda () (interactive) (insert "∉")) "∉")
+  ("1" (lambda () (interactive) (insert "ℚ")) "ℚ")
+  ("2" (lambda () (interactive) (insert "⊂")) "⊂")
+  ("3" (lambda () (interactive) (insert "⊃")) "⊃")
+  ("4" (lambda () (interactive) (insert "⋂")) "⋂")
+  ("5" (lambda () (interactive) (insert "⋃")) "⋃")
+  ("6" (lambda () (interactive) (insert "∧")) "∧")
+  ("7" (lambda () (interactive) (insert "∨")) "∨")
+  ("8" (lambda () (interactive) (insert "∙")) "∙")
+  ("9" (lambda () (interactive) (insert "∘")) "∘")
+  ("q" nil "cancel"))
+
+
+;; Key Maps
+
+(global-set-key (kbd "C-c m") #'math-lowercase/body)
+(global-set-key (kbd "C-c n") #'math-uppercase/body)
+(global-set-key (kbd "M-p") #'math-lowercase/body)
+(global-set-key (kbd "M-n") #'math-uppercase/body)
+
+
+
+;; Org Mode indenting:
+
+(add-hook 'org-mode-hook 'poly-org-mode)
+
+;; Org Mode auto-insert:
+
+(defun lisp-mode-code-block ()
+  (interactive)
+  (org-insert-structure-template "src")
+  (insert "lisp")
+  (newline)
+  (newline)
+  (newline)
+  (goto-char (line-beginning-position 0)))
+
+(defun lisp-mode-code-block-region ()
+  (interactive)
+  (save-excursion
+    (let* ((beg (region-beginning))
+	   (end (region-end))
+	   (code-test (buffer-substring-no-properties beg end)))
+      (kill-region beg end)
+      (org-insert-structure-template "src")
+      (insert "lisp")
+      (newline)
+      (newline)
+      (insert code-test)
+      (newline))))
+
+(global-set-key (kbd "C-c l") 'lisp-mode-code-block)
+(global-set-key (kbd "C-c r") 'lisp-mode-code-block-region)
+
+;; I think this is for executing lisp from org files
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((lisp . t)))
+
+
+
+
+
+
+;; For more settings - refer to https://orgmode.org/manual/Publishing-options.html#Publishing-options
+
+;; Google Search
+
+(setq search-engines
+      '(
+        (("google" "g") "https://google.com/search?q=%s")
+        (("duckduckgo" "d" "ddg") "https://duckduckgo.com/lite/?q=%s")
+        (("rfc" "r") "https://www.rfc-editor.org/rfc/rfc%s.txt")
+        (("rfc-kw" "rk") "https://www.rfc-editor.org/search/rfc_search_detail.php?title=%s")
+        ))
+
+(setq search-engine-default "duckduckgo")
+
+(defun search-get-engine (engine-name engine-list)
+  (cond
+   ((null engine-list) nil)
+   ((member engine-name (caar engine-list)) (cadar engine-list))
+   (t (search-get-engine engine-name (cdr engine-list)))))
+
+(defun search-engine (engine-name term)
+  "Search for a term using an engine."
+  (interactive "MEngine: \nMTerm: ")
+  (let* ((url (search-get-engine engine-name search-engines)))
+    (if (equal url nil)
+        (message "Error: search engine \"%s\" unknown." engine-name)
+      (eww (format url (url-hexify-string term))))))
+
+(defun search-web (term)
+  "Search the web using google or a specified engine."
+  (interactive "MQuery: ")
+  (let ((idx (position ?: term)))
+    (if (equal idx nil)
+        (search-engine search-engine-default term)
+      (search-engine (subseq term 0 idx)
+                     (subseq term (+ 1 idx))))))
+
+(global-set-key (kbd "C-c w") 'search-web)
+
+(setq eww-search-prefix "https://google.com/?q=")
+
+
+
+;; Unfill Paragraph
+
+;;; It is the opposite of fill-paragraph    
+(defun unfill-paragraph ()
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
+
+;; - * - * - * - * Org Mode Settings - * - * - * - *
+
+;; Project Settings
+
+(require 'ox-publish)
+
+(setq org-src-fontify-natively t)
+
+(defun my-org-html-postamble (plist)
+ (format "Last update : %s" (format-time-string "%d %b %Y")))
+(setq org-html-postamble 'my-org-html-postamble)
+
+(setf (cdr (assoc 'file org-link-frame-setup)) 'find-file)
+
+(setq org-publish-project-alist
+      '(("org-notes"
+         :base-directory "~/ashok-khanna.github.io/org/"
+         :base-extension "org"
+         :publishing-directory "~/ashok-khanna.github.io/"
+         :publishing-function org-html-publish-to-html
+         :exclude "PrivatePage.org" ;; regexp
+         :headline-levels 3
+         :section-numbers nil
+         :with-toc nil
+	 :html-doctype "html5"
+	 :html-link-home "https://www.lisp123.org"
+	 :html-link-up "index.html"
+	 :html-head-include-default-style nil
+	 :html-head-include-scripts t
+	 :html5-fancy t
+	 :recursive t
+         :html-head " <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+<link rel=\"stylesheet\" type=\"text/css\" href=\"/css/style.css\" />"
+         :html-preamble t
+	 :html-preamble-format (("en" "<div id=\"logo\"><a href=\"https://www.lisp123.org\">Learning Lisp - Easy as 1, 2, 3!</a></div>"))
+	 :html-postamble-format (("en" "<p class=\"Date\">Last updated: %d</p><script src=\"/scripts/main.js\"></script>"))
+	 :html-postamble t)
+
+	("org-static"
+       :base-directory "~/ashok-khanna.github.io/org/"
+       :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+       :publishing-directory "~/ashok-khanna.github.io/"
+       :recursive t
+       :publishing-function org-publish-attachment)      
+        
+        ("org" :components ("org-notes" "org-static"))))
+
+
+;; Project Settings
+
+(setq org-publish-project-alist
+      '(("org-notes-mathql"
+         :base-directory "~/mathql/org/"
+         :base-extension "org"
+         :publishing-directory "~/mathql/www_/"
+         :publishing-function org-html-publish-to-html
+         :exclude "PrivatePage.org" ;; regexp
+         :headline-levels 3
+         :section-numbers nil
+         :with-toc nil
+	 :html-doctype "html5"
+	 :html-link-home "/index.html"
+	 :html-link-up "index.html"
+	 :html-head-include-default-style nil
+	 :html-head-include-scripts t
+	 :html5-fancy t
+	 :recursive t
+         :html-head " <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+<link rel=\"stylesheet\" type=\"text/css\" href=\"/assets/css/style.css\" />"
+         :html-preamble t
+	 :html-preamble-format (("en" "<div id=\"logo\"><a href=\"/index.html\">MathQL Theorem Solver</a></div>"))
+	 :html-postamble-format (("en" "<p class=\"Date\">Last updated: %d</p>"))
+	 :html-postamble t)
+
+	("org-static-mathql"
+       :base-directory "~/mathql/assets/"
+       :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+       :publishing-directory "~/mathql/www_/assets/"
+       :recursive t
+       :publishing-function org-publish-attachment)      
+        
+        ("mathql" :components ("org-notes-mathql" "org-static-mathql"))))
+
+;; - * - * - * - * Scheme Settings - * - * - * - *
+
+(require 'xscheme)
+
+(setq scheme-program-name "/usr/local/Cellar/mit-scheme/11.2/bin/mit-scheme -library /usr/local/Cellar/mit-scheme/11.2/lib/mit-scheme-x86-64-11.2")
+
+
+;; Lisp System Browser
+
+;; https://github.com/mmontone/lisp-system-browser
+
+;; (push "~/lisp-system-browser" load-path)
+
+(setq slime-contribs '(slime-fancy))
+
+(slime-setup)
+
+
+(global-set-key (kbd "C-c s") #'(lambda ()
+				  (interactive)
+				  (switch-to-buffer "*slime-repl sbcl*")))
+
+
+(require 'golden-ratio-scroll-screen)
+(global-set-key [remap scroll-down-command] 'golden-ratio-scroll-screen-down)
+(global-set-key [remap scroll-up-command] 'golden-ratio-scroll-screen-up)
+
+
+(global-set-key (kbd "C-c e") '(lambda ()
+				 (interactive)
+				 (revert-buffer t (not (buffer-modified-p)) t)))
+
+
+(global-set-key (kbd "C-x C-u") 'undo)
+
+(global-set-key (kbd "M-o") 'other-window)
+
+(defun top-10-buffers ()
+  (interactive)
+  (lexical-let ((buffer-list (buffer-list)))
+    (pop-to-buffer-same-window "My Buffer List")
+    (erase-buffer)
+    (insert "Top 10 Buffers \n")
+    (insert "-------------- \n")
+    (loop for item in buffer-list
+	  for index from 0 to 9
+	  do (insert (format "    [%s]  %s~\n" index item)))
+    (special-mode)
+    (use-local-map (copy-keymap special-mode-map))
+    (loop for item in buffer-list
+	  for index from 0 to 9
+	  do (local-set-key (format "%s" index) `(lambda ()
+						   (interactive)
+						   (switch-to-buffer ',item))))
+    (local-set-key (format "%s" index) #'(lambda ()
+					   (interactive)
+					   (switch-to-buffer (nth 0 buffer-list))))))
+
+;; https://www.reddit.com/r/emacs/comments/fk72zv/org_export_pdf_pdflatex_command_not_found/
+
+(setq org-latex-pdf-process
+      '("/Library/TeX/texbin/pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "/Library/TeX/texbin/pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "/Library/TeX/texbin/pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+(setq graphviz-dot-dot-program "/usr/local/Cellar/graphviz/2.48.0/bin/dot")

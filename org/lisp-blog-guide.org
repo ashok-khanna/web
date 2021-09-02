@@ -1,0 +1,60 @@
+** Try this asdfasdf asdf
+
+123
+# Don't export this
+
+asdf
+
+sadf asdf
+asdfasdf
+asdfa
+
+* asdfsdf
+
+sdf asdf
+
+safd
+* Lisp Blogging in Org
+
+Today we will briefly discuss how to set up our own lisp blog, where we write in org-mode,
+export to html and then publish to the web. We will be working mostly from
+[[https://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html][org-mode's official tutorial org-mode files to HTML]], and adapting it for our needs
+as Lisp programmers.
+
+To begin, let us scope out our requirements:
+
+1. Creating blog posts entirely within org mode (from writing to publishing)
+2. Minimising boilerplate 
+3. Custom Stylesheets
+4. Adding comments that don't get published
+5. Code formatting
+6. Copy/Paste mechanism
+7. Running code from org mode into SLIME
+8. Separating html from org
+9. Additional shortcuts to make our life easier
+10. Basics of Org Mode
+
+sdf
+
+test this
+
+*** Emacs Configuration Settings
+s
+
+
+#+begin_src lisp
+
+  (defun try ()
+    (what about this))
+
+  (defun hello ()
+    (print "hello world"))
+
+  (defun try ()
+    (+ 1 3))
+
+  (try)
+
+#+end_src
+
+asdf

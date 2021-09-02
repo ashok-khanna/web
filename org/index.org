@@ -1,0 +1,59 @@
+#+DATE: 2 September 2021
+#+OPTIONS: html-postamble:nil
+
+#+TITLE: AKhanna.Net
+
+Welcome to AKhanna.Net! A website focused on the intersection of maths &
+technology. I am currently working on various mathematical software
+using Common Lisp and this website documents all my knowledge in Lisp,
+Emacs, Computer Science and Mathematics (more to come later on this - right
+now my focus is on the technology stack). In addition, this website serves
+as my public facing blog and also as a document store for valuable
+resources I come across.
+
+I hope you enjoy and find Math.Dev a useful resource for you. I love to
+chat and get feedback from others, so please do drop me an e-mail at
+ashok.khanna@hotmail.com if you have similar interests and would like to
+chat some more. If you yourself work on Mathematical software, I would
+/especially/ like to hear from you! :)
+
+A reasonable amount of my work is available on [[file:https://ashok-khanna.github.io][my GitHub profile]], so check
+me out there!
+
+* Lisp Resources
+
+1. [[file:lisp/clbe/index.org][Common Lisp by Example]] - My ongoing introductory guide for Common Lisp
+2. [[file:lisp/sicp/index.org][SICP & CL]] - My notes on SICP and solutions in Common Lisp (I'm just starting,
+   so it will take some time for these to be completed!)
+
+
+* Emacs Resources
+
+This website was built entirely with Org-Mode. I will shortly publish
+an article on how to achieve this, stay tuned!
+
+1. [[file:emacs/tips.org][Useful Tips & Tricks]] - An unorganised collection of useful tips & tricks
+   for Emacs
+
+
+* Math Resources
+
+1. [[file:https://apps.apple.com/us/app/rpn-30/id1451413517][RPN 30]] - My highly rated Reverse Polish Notation calculator for iPhones.
+   It has over 15,000 downloads and counting :-) I will add a selection of its
+   reviews here shortly.
+
+
+* Computer Science Resources
+
+I am currently reading The Design and Analysis of Computer Algorithms by Alfred
+Aho, Jeffrey Ullman and John Hopcroft. I will publish a concise summary here
+as I work through this book.
+
+
+* Other Resources
+
+1. [[file:https://pdf.math.dev][Beautiful PDFs from HTML]] - My tutorial on using Paged.Js to produce paginated
+   media from HTML. It has been read over 20,000 times. A good read for anybody
+   looking to automate PDF report generation by taking advantage of Chrome's rendering
+   engine (preferably in a headless setup). The accompanying Hacker News discussion
+   can be found [[file:https://news.ycombinator.com/item?id=26691626][here]].

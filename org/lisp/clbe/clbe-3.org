@@ -1,0 +1,89 @@
+#+DATE: 24 July 2021
+
+#+TITLE: Global Variables & Assignment
+
+Previous: [[file:clbe-2.org][2. Symbols & Data Objects]]
+
+Next: [[file:clbe-4.org][4. Input & Output]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+DEFPARAMETER and DEFVAR establish global variables, known more
+technically as special or dynamic variables. These variables can be
+accessed throughout a Lisp program.
+
+If a local variable exists with the same name as a global variable, a
+lexical closure will typically refer to the local variable. To avoid
+confusion, we should always name special variables with leading and
+trailing asterisks *, such as in the below examples.
+
+DEFPARAMETER will unconditionally assign the value supplied to the
+variable, while DEFVAR will only assign the value if it is not already
+bound to the variable. A value must be supplied to the DEFPARAMETER
+macro, whilst DEFVAR can establish a dynamic variable without
+assigning it a value:
+
+#+begin_src lisp
+
+  ;; Establish an unbound variable
+  
+  (defvar *x*)
+  
+  ;; Assign the value 15 to X
+  
+  (defparameter *x* 15)
+  
+  ;; Does nothing as X already bound
+  
+  (defvar *x* 10)
+  
+#+end_src
+
+We can define global constants with DEFCONSTANT. Note that global
+constants cannot be used as function parameters or rebound to a new
+value at a later stage.
+
+#+begin_src lisp
+
+  (defconstant +my-constant+ 20)
+  
+#+end_src
+
+* General Purpose Assignment
+
+SETF is Lisp’s general purpose assignment macro that assigns a value
+to a designated place (such as a variable). It is a very powerful
+setter that can assign values to many different objects.
+
+We won’t go into detail, but rather provide illustrative examples
+throughout this guide. The syntax of SETF is as follows:
+
+#+begin_src emacs-lisp
+
+  (setf place value)
+  
+#+end_src
+
+#+begin_src lisp
+
+  ;; Set x to 10
+
+  (setf x 10)
+
+  ;; Set x to 1 and y to 2
+
+  (setf x 1 y 2)
+
+  ;; Same as (setf x (+ x 1))
+
+  (incf x)
+
+  ;; Same as (setf x (- x 1))
+
+  (decf x)
+
+  ;; Same as (setf x (+ x 10))
+  
+  (incf x 10)
+
+#+end_src

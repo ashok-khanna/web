@@ -1,0 +1,47 @@
+#+DATE: 31 July 2021
+
+#+TITLE: Metalinguistic Abstraction
+
+Previous: [[file:sicp-3.org][3. Modularity, Objects, and State]]
+
+Next: [[file:sicp-5.org][5. Computing with Register Machines]]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+An evaluator written in the same language that it evaluates is said
+to be /metacircular/. Recall that in our /environment model of 
+evaluation/, the body of a procedure is evaluated in a new environment,
+which is constructed by extending the environment part of the procedure
+object by a frame in which the formal parameters of the procedure
+are bound to the arguments to which the procedure is applied.
+
+Thus, the basic process of evaluation is to evaluate expressions in
+environments by reducing them to procedures to be applied to arguments,
+which in turn reduce to new expressions to be evaluated in new environments,
+until we get down to symbols, whose values are looked up in the environment
+and to primitive procedures, which are applied directly.
+
+* Core of the Evaluator
+
+=EVAL= takes two arguments, an expression and an environment. It is a
+structured case analysis of the syntatic type of the expression to be
+evaluated. Thus, each type of expression has a predicate that tests for it
+and an abstract means for selecting its parts. This /abstract syntax/
+makes it easier to change the syntax of the language used by the same
+evaluator, but with a different collection of syntax procedures.
+
+#+begin_src lisp
+
+  (defpackage :sicp
+    (:use :cl))
+
+  (in-package :sicp)
+
+  (defun eval ()
+    (print "hello world"))
+
+#+end_src
+
+#+RESULTS:
+: CS325-USER::EVAL*
+

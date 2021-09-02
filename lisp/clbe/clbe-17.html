@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-02 Thu 20:33 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reading &amp; Writing to Files</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2020 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="org-div-home-and-up">
+ <a accesskey="h" href="index.html"> UP </a>
+ |
+ <a accesskey="H" href="https://www.akhanna.net"> HOME </a>
+</div><div id="preamble" class="status">
+<div id="logo"><a href="https://www.akhanna.net"Ashok Khanna</a></div>
+</div>
+<div id="content">
+<h1 class="title">Reading &amp; Writing to Files</h1>
+<p>
+Previous: <a href="clbe-16.html">16. Structures</a>
+</p>
+
+<p>
+Next: <a href="clbe-18.html">18. Advanced Looping</a>
+</p>
+
+<p>
+The WITH-OPEN-FILE macro is used to read &amp; write to files and then
+close the file. Streams are Lisp objects representing sources and/or
+destinations of characters. To read from or write to a file, you open
+it as a stream. By default, input is read from the stream *​standard-input​*
+and output is recorded in *​standard-output​*. Initially they will be the
+same place - the toplevel.
+</p>
+
+<p>
+Below is an example opening a file as my-stream and then reading from
+it. The NIL in the below inhibits end of file errors.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">with-open-file</span> (my-stream <span style="color: #8b2252;">"/Users/ashokkhanna/test.txt"</span>)
+  (format t <span style="color: #8b2252;">"~a~%"</span> (read-line my-stream nil)))
+
+</pre>
+</div>
+
+<p>
+Below is an example opening a file as my-stream and then writing to
+it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">with-open-file</span> (my-stream <span style="color: #8b2252;">"/Users/ashokkhanna/test.txt"</span> <span style="color: #483d8b;">:direction</span>
+                           <span style="color: #483d8b;">:output</span> <span style="color: #483d8b;">:if-exists</span> <span style="color: #483d8b;">:append</span>)
+  (format my-stream <span style="color: #8b2252;">"~a~%"</span> <span style="color: #8b2252;">"Hello, World!"</span>))
+
+</pre>
+</div>
+
+<p>
+The following open arguments can be supplied to the WITH-OPEN-FILE
+macro:
+</p>
+
+<table>
+
+
+<colgroup>
+<col  class="org-left">
+
+<col  class="org-left">
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Arguments</th>
+<th scope="col" class="org-left">Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left">:direction :output</td>
+<td class="org-left">Write to a file insead of reading</td>
+</tr>
+
+<tr>
+<td class="org-left">:if-does-not-exist :create</td>
+<td class="org-left">Create a file if it does not exist</td>
+</tr>
+
+<tr>
+<td class="org-left">:if-exists :supersede</td>
+<td class="org-left">Replace the file that exists</td>
+</tr>
+
+<tr>
+<td class="org-left">:if-exists :overwrite</td>
+<td class="org-left">Overwrite file</td>
+</tr>
+
+<tr>
+<td class="org-left">:if-exists :append</td>
+<td class="org-left">Write to end of file</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 24 July 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>
