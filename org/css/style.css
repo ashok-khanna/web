@@ -57,17 +57,23 @@ a:hover { text-decoration: underline; }
 
 html, body { margin: 0px }
 
-@media only screen and (min-width: 1000px) {
+@media only screen and (min-width: 1200px) {
 
     body { display:  grid;
-	   grid-template-columns:  80px 1fr 960px 1fr 80px;
-	   grid-template-rows:  80px 40px 1fr 80px;
-	   grid-template-areas: "preamble preamble preamble preamble preamble"
-				" . . . . ."
-				"sidebar . content . ."
-				"sidebar . postamble . ."; }
+	   grid-template-columns:  1fr 120px 960px 120px 1fr;
+	   grid-template-rows:  20px 40px 1fr 80px;
+	   grid-template-areas: ". preamble preamble preamble ."
+				". . . . ."
+				". . content . ."
+				". . postamble . ."; }
 
-    #preamble {	grid-area: preamble; background-color: teal; color: teal; padding: 20px; }
+    #preamble {	grid-area: preamble; display: flex; padding-top: 20px }
+
+    #preamble div { padding-right: 20px }
+
+    #preamble a, #preamble a:visited { color: #505050; text-decoration: none; font-size: 80%}
+    #preamble a:hover { text-decoration: underline }
+    
 
     #content { grid-area: content; }
 

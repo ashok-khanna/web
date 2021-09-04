@@ -27,7 +27,7 @@ can create a 2 x 3 array as follows:
 
 The functions AREF and SETF allow us to access elements and set them
 with values:
-
+st
 #+begin_src lisp
 
   ;; Returns NIL
