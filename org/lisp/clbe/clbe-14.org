@@ -2,9 +2,16 @@
 
 #+TITLE: Arrays & Sequences
 
+#+ATTR_HTML: :class nav-links
 Previous: [[file:clbe-13.org][13. More on Functions]]
-
+#+ATTR_HTML: :class nav-links
 Next: [[file:clbe-15.org][15. Hash Tables]]
+
+
+#+begin_theorem
+If an integer $n$ is greater than 2, then the equation $a^n + b^n = c^n$
+has no solutions in non-zero integers $a$, $b$, and $c$.
+#+end_theorem
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

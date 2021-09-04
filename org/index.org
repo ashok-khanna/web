@@ -57,3 +57,4 @@ as I work through this book.
    looking to automate PDF report generation by taking advantage of Chrome's rendering
    engine (preferably in a headless setup). The accompanying Hacker News discussion
    can be found [[file:https://news.ycombinator.com/item?id=26691626][here]].
+
