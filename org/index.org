@@ -5,24 +5,35 @@
 
 Thank you for visiting my website. I like to write about Computer Science, Mathematics
 and Design, with a focus on quality over quantity. In addition, I like to save down
-valuable resources I find online, which you may also find useful too. Thank you for your
-time and [[file:mailto:email@ashok.jp][contact me]] if you find anything interesting.
+valuable resources I find online, which you may also find useful. Thank you for your
+time and [[file:mailto:email@ashok.jp][contact me if anything sparks your interest]].
 
 
 * Articles
 
-The [[file:/articles.html][Articles Section]] of my website contains most of my writings. Some recent
-posts include:
+I write about Computer Science and Design in the [[file:https://wwww.ashok.jp/articles.html][articles section of my website]].
+The four most recent articles are listed below.
 
-1. asdf
+1. [[file:https://ashok-khanna.medium.com/introduction-to-dired-mode-91cecd3a06ff][Introduction to Dired Mode]] (August 23, 2021)
+
+2. [[file:https://ashok-khanna.medium.com/continuations-in-common-lisp-1911cb413a03][Continuations in Common Lisp]] (August 17, 2021)
+
+3. [[file:https://ashok-khanna.medium.com/introduction-to-asdf-d25efe2780c2][Introduction to ASDF]] (August 13, 2021)
+
+4. [[file:https://ashok-khanna.medium.com/persistent-in-memory-data-storage-in-common-lisp-b-k-n-r-37f8ae76042f][Persistent in Memory Data Storage in Common Lisp]] (June 23, 2021)
+
 
 
 * Resources
 
-I save down useful papers, free books and weblinks in the [[file:/resources.html][Resources Section]]
-of my website. Some recent posts include:
+I save down useful papers, free books and weblinks in the [[file:https://www.ashok.jp/resources.html][resources section of my website]].
+Two useful resources are below.
 
-1. asdf
+1. [[file://https://clhs.ashok.jp][Common Lisp HyperSpec]] - A mirror of the Common Lisp HyperSpec, as kindly
+   made available by [[file:https//www.lispworks.com][LispWorks]] and [[file:http://www.nhplace.com][Kent Pitman]].
+
+2. [[file:https://lisp.ashok.jp][Common Lisp, the Language 2nd Edition]] - A mirror of the venerable reference textbook
+   for Common Lisp, written by the acclaimed [[file:http://www.nhplace.com][Guy Steele]]. 
 
 
 
@@ -33,7 +44,7 @@ to write first on Medium and later transfer a copy here. Medium
 helps me gain visibility and some of my articles are top ranked in Google 
 searches for their topics.
 
-I also share some of my open source projects on [[file:https://ashok-khanna.github.io][GitHub]]. A lot of my work
+I also share some of my open source projects on [[file:https://github.com/ashok-khanna][GitHub]]. A lot of my work
 is private, but I try to contribute to open source and the free software
 movement when I have time. Some of my contributions include:
 
@@ -50,7 +61,7 @@ movement when I have time. Some of my contributions include:
 3. [[file:https://apps.apple.com/us/app/rpn-30/id1451413517][RPN 30]] - My highly rated Reverse Polish Notation calculator for iPhones.
    It has over 15,000 downloads and counting, together with a 4.8/5 star rating
    on the Apple App Store with roughly 50 reviews to date. A sample of its reviews
-   can be found [[file:/rpn30-reviews.html][here]]. The full source code of this calculator is [[file:https://github.com/ashok-khanna/RPN-31][available here]],
+   [[file:/rpn30-reviews.html][can be found here]]. The full source code of this calculator is [[file:https://github.com/ashok-khanna/RPN-31][available here]],
    and is a useful example for those trying to learn Swift & SwiftUI.
 
 4. [[file:https://github.com/ashok-khanna/math-hydras][Math Hydras]] - My keybindings for inserting greek letters and mathematical symbols
@@ -62,6 +73,6 @@ movement when I have time. Some of my contributions include:
 
 * Contact
 
-You may contact me at email@ashok.jp. If you like what I do and would
+You may contact me at [[file:mailto:email@ashok.jp][email@ashok.jp]]. If you like what I do and would
 like to work together on some project, I would love to hear what you have in
 mind. You can also reach out to me for any technical writing assignments.
