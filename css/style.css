@@ -76,9 +76,9 @@ figcaption {
 
 /* Main Typography */
 
-html { font-family: "Charter", "Lora", serif; text-rendering: optimizelegibility; font-size: 100%; }
+html { font-family: "Charter", "Lora", serif; text-rendering: optimizelegibility; font-size: 100%; margin: 40px; }
 
-body { line-height: 1.65em; font-size: 1.16rem; margin: 40px auto; }
+body { line-height: 1.65em; font-size: 1.16rem; margin: auto; }
 
 a { text-decoration: none; }
 
