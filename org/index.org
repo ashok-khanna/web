@@ -1,60 +1,67 @@
 #+DATE: 2 September 2021
 #+OPTIONS: html-postamble:nil
 
-#+TITLE: AKhanna.Net
+#+TITLE: Ashok on the Web
 
-Welcome to AKhanna.Net! A website focused on the intersection of maths &
-technology. I am currently working on various mathematical software
-using Common Lisp and this website documents all my knowledge in Lisp,
-Emacs, Computer Science and Mathematics (more to come later on this - right
-now my focus is on the technology stack). In addition, this website serves
-as my public facing blog and also as a document store for valuable
-resources I come across.
-
-I hope you enjoy and find Math.Dev a useful resource for you. I love to
-chat and get feedback from others, so please do drop me an e-mail at
-ashok.khanna@hotmail.com if you have similar interests and would like to
-chat some more. If you yourself work on Mathematical software, I would
-/especially/ like to hear from you! :)
-
-A reasonable amount of my work is available on [[file:https://ashok-khanna.github.io][my GitHub profile]], so check
-me out there!
-
-* Lisp Resources
-
-1. [[file:lisp/clbe/index.org][Common Lisp by Example]] - My ongoing introductory guide for Common Lisp
-2. [[file:lisp/sicp/index.org][SICP & CL]] - My notes on SICP and solutions in Common Lisp (I'm just starting,
-   so it will take some time for these to be completed!)
+Thank you for visiting my website. I like to write about Computer Science, Mathematics
+and Design, with a focus on quality over quantity. In addition, I like to save down
+valuable resources I find online, which you may also find useful too. Thank you for your
+time and [[file:mailto:email@ashok.jp][contact me]] if you find anything interesting.
 
 
-* Emacs Resources
+* Articles
 
-This website was built entirely with Org-Mode. I will shortly publish
-an article on how to achieve this, stay tuned!
+The [[file:/articles.html][Articles Section]] of my website contains most of my writings. Some recent
+posts include:
 
-1. [[file:emacs/tips.org][Useful Tips & Tricks]] - An unorganised collection of useful tips & tricks
-   for Emacs
-
-
-* Math Resources
-
-1. [[file:https://apps.apple.com/us/app/rpn-30/id1451413517][RPN 30]] - My highly rated Reverse Polish Notation calculator for iPhones.
-   It has over 15,000 downloads and counting :-) I will add a selection of its
-   reviews here shortly.
+1. asdf
 
 
-* Computer Science Resources
+* Resources
 
-I am currently reading The Design and Analysis of Computer Algorithms by Alfred
-Aho, Jeffrey Ullman and John Hopcroft. I will publish a concise summary here
-as I work through this book.
+I save down useful papers, free books and weblinks in the [[file:/resources.html][Resources Section]]
+of my website. Some recent posts include:
+
+1. asdf
 
 
-* Other Resources
 
-1. [[file:https://pdf.math.dev][Beautiful PDFs from HTML]] - My tutorial on using Paged.Js to produce paginated
-   media from HTML. It has been read over 20,000 times. A good read for anybody
-   looking to automate PDF report generation by taking advantage of Chrome's rendering
-   engine (preferably in a headless setup). The accompanying Hacker News discussion
-   can be found [[file:https://news.ycombinator.com/item?id=26691626][here]].
+* GitHub & Medium
 
+I [[file:https://ashok-khanna.medium.com][also blog Medium]], where I have roughly 1,000 readers per month. I tend
+to write first on Medium and later transfer a copy here. Medium
+helps me gain visibility and some of my articles are top ranked in Google 
+searches for their topics.
+
+I also share some of my open source projects on [[file:https://ashok-khanna.github.io][GitHub]]. A lot of my work
+is private, but I try to contribute to open source and the free software
+movement when I have time. Some of my contributions include:
+
+1. [[file:https://github.com/ashok-khanna/lisp-notes][The Common Lisp Cheat Sheet]] - My ongoing introductory guide to Common Lisp,
+   which is now featured on the Reddit Sidebar for r/lisp. 
+
+2. [[file:https://pdf.math.dev][Beautiful PDFs from HTML]] - My tutorial on using Paged.Js to produce paginated
+   media from HTML. It has been read over 20,000 times and currently has over 250
+   stars on Github. It is a good read for anybody looking to automate PDF report
+   generation by taking advantage of Chrome's rendering engine (preferably in a
+   headless setup). The accompanying Hacker News discussion can be found [[file:https://news.ycombinator.com/item?id=26691626][here]]
+   (note that I changed website domains, so the web link on HN no longer works).
+
+3. [[file:https://apps.apple.com/us/app/rpn-30/id1451413517][RPN 30]] - My highly rated Reverse Polish Notation calculator for iPhones.
+   It has over 15,000 downloads and counting, together with a 4.8/5 star rating
+   on the Apple App Store with roughly 50 reviews to date. A sample of its reviews
+   can be found [[file:/rpn30-reviews.html][here]]. The full source code of this calculator is [[file:https://github.com/ashok-khanna/RPN-31][available here]],
+   and is a useful example for those trying to learn Swift & SwiftUI.
+
+4. [[file:https://github.com/ashok-khanna/math-hydras][Math Hydras]] - My keybindings for inserting greek letters and mathematical symbols
+   quickly in Emacs.
+
+5. [[file: https://ashok-khanna.medium.com/lisp-the-web-4c00c88d11f9][Lisp & the Web]] - A detailed step through for creating cloud-based web applications
+   through Common Lisp and Google Compute Engine. It has been read over 10,000 times.
+
+
+* Contact
+
+You may contact me at email@ashok.jp. If you like what I do and would
+like to work together on some project, I would love to hear what you have in
+mind. You can also reach out to me for any technical writing assignments.

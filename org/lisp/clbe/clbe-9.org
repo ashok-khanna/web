@@ -8,7 +8,7 @@ Next: [[file:clbe-10.org][10. Local Variables & Functions]]
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-DOTIMES and DOLIST are basic loop macros for iteration. In the below
+=DOTIMES= and =DOLIST= are basic loop macros for iteration. In the below
 example, DOLIST will iterate over the items of my-list and execute the
 loop body for each item of the list. my-variable holds the value of
 each successive item in the list during the iteration.

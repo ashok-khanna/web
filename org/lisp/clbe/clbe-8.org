@@ -8,8 +8,8 @@ Next: [[file:clbe-9.org][9. Basic Loops]]
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-The five main conditionals in Common Lisp are IF, WHEN, UNLESS, COND
-and CASE. Conditionals with an implicit PROGN block allow for multiple
+The five main conditionals in Common Lisp are =IF=, =WHEN=, =UNLESS=, =COND=
+and =CASE=. Conditionals with an implicit PROGN block allow for multiple
 forms within their bodies. To begin with an example of IF form (note
 there is no implicit PROGN):
 
