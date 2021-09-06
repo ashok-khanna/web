@@ -4,8 +4,12 @@
 #+TITLE: Articles
 
 Below is a listing of articles I have written to date, sorted by
-topic and then chronologically. I hope you find them useful, and
-[[file:mailto:email@ashok.jp][drop me an e-mail]] to discuss any of the below in greater depth.
+topic and then chronologically. Some of these are hosted on Medium,
+and I am in the (albeit slow) process of porting them over to my
+main website here.
+
+I hope you find them useful, and [[file:mailto:email@ashok.jp][drop me an e-mail]] to discuss any of
+the below in greater depth.
 
 
 * Emacs
@@ -43,6 +47,4 @@ topic and then chronologically. I hope you find them useful, and
 
 * Other
 
-[This is a placeholder. I may add some personal, non-tech posts here].
-
-
+In the future, I will add some other articles here.

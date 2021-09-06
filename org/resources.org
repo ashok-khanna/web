@@ -18,7 +18,7 @@ or otherwise benefit from any of them in any way.
 * Common Lisp
 
 1. [[file://https://clhs.ashok.jp][Common Lisp HyperSpec]] - A mirror of the Common Lisp HyperSpec, as kindly
-   made available by [[file:https//www.lispworks.com][LispWorks]] and [[file:http://www.nhplace.com][Kent Pitman]].
+   made available by [[file:https//www.lispworks.com][LispWorks]] and the acclaimed [[file:http://www.nhplace.com][Kent Pitman]].
 
 2. [[file:https://lisp.ashok.jp][Common Lisp, the Language 2nd Edition]] - A mirror of the venerable reference textbook
    for Common Lisp, written by the acclaimed [[file:http://www.nhplace.com][Guy Steele]]. 
