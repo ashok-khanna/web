@@ -95,9 +95,6 @@ h1 { margin-top: 3rem; }
 /* Layout */
 
 
-
-html, body { margin: 0px }
-
 @media only print {
     #preamble: display: none;
 }  

@@ -10,12 +10,35 @@ topic and then chronologically. I hope you find them useful, and
 
 * Emacs
 
+1. [[file:https://ashok-khanna.medium.com/introduction-to-dired-mode-91cecd3a06ff][Introduction to Dired Mode]] (August 23, 2021)
+
 
 * Common Lisp
+
+1. [[file:https://ashok-khanna.medium.com/continuations-in-common-lisp-1911cb413a03][Continuations in Common Lisp]] (August 17, 2021)
+
+2. [[file:https://ashok-khanna.medium.com/introduction-to-asdf-d25efe2780c2][Introduction to ASDF]] (August 13, 2021)
+
+3. [[file:https://ashok-khanna.medium.com/persistent-in-memory-data-storage-in-common-lisp-b-k-n-r-37f8ae76042f][Persistent in Memory Data Storage in Common Lisp]] (June 23, 2021)
+
+4. [[file:https://ashok-khanna.medium.com/lisp-the-web-4c00c88d11f9][Lisp & the Web]] (April 16, 2021)
+
+5. [[file:https://ashok-khanna.medium.com/an-introduction-to-lisp-packages-7a9ee352006e][Introduction to Lisp Packages]] (December 29, 2020)
+
+7. [[file:https://ashok-khanna.medium.com/common-lisp-entering-the-matrix-9f4d90145a50][Common Lisp - Entering the Matrix]] (December 8, 2020)
+
+8. [[file:https://ashok-khanna.medium.com/formatting-lisp-5e28020b8bac][Formatting Lisp]] (October 26, 2020)
 
 
 * Web Development
 
+1. [[file:https://ashok-khanna.medium.com/rounded-tables-an-elusive-dream-5f00709f6521][Rounded Tables: An Elusive Dream]] (May 24, 2021)
+
+2. [[file:https://ashok-khanna.medium.com/lisp-the-web-4c00c88d11f9][Lisp & the Web]] (April 16, 2021)
+
+3. [[file:https://ashok-khanna.medium.com/beautiful-pdfs-from-html-9a7a3c565404][Beautiful PDFs from HTML]] (April 9, 2021)
+
+4. [[file:https://ashok-khanna.medium.com/crud-webapp-with-angular-node-js-mysql-5733fd1b8fc4][CRUD Web App with Angular, Node.Js and MySQL]] (July 18, 2020)
 
 
 * Other
