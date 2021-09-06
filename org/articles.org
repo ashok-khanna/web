@@ -47,7 +47,7 @@ the below in greater depth.
 
 * Macrology
 
-1. [[file:articles/macrology/with.org][The With Macro]] (September 6, 2021)
+1. [[file:macrology/with.org][The With Macro]] (September 6, 2021)
 
 * Other
 

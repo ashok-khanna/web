@@ -28,7 +28,7 @@ The four most recent articles are listed below.
 I save down useful papers, free books and weblinks in the [[file:resources.org][resources section of my website]].
 Two useful resources are below.
 
-1. [[file://https://clhs.ashok.jp][Common Lisp HyperSpec]] - A mirror of the Common Lisp HyperSpec, as kindly
+1. [[file:https://hyperspec.ashok.jp][Common Lisp HyperSpec]] - A mirror of the Common Lisp HyperSpec, as kindly
    made available by [[file:https//www.lispworks.com][LispWorks]] and the acclaimed [[file:http://www.nhplace.com][Kent Pitman]].
 
 2. [[file:https://lisp.ashok.jp][Common Lisp, the Language 2nd Edition]] - A mirror of the venerable reference textbook
