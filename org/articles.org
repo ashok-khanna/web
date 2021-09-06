@@ -1,7 +1,7 @@
 #+DATE: 2 September 2021
 #+OPTIONS: html-postamble:nil
 
-#+TITLE: Articles
+#+TITLE: The With Macro
 
 Below is a listing of articles I have written to date, sorted by
 topic and then chronologically. Some of these are hosted on Medium,
@@ -44,6 +44,10 @@ the below in greater depth.
 
 4. [[file:https://ashok-khanna.medium.com/crud-webapp-with-angular-node-js-mysql-5733fd1b8fc4][CRUD Web App with Angular, Node.Js and MySQL]] (July 18, 2020)
 
+
+* Macrology
+
+1. [[file:articles/macrology/with.org][The With Macro]] (September 6, 2021)
 
 * Other
 

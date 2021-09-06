@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-06 Mon 23:07 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The 'With' Macro</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+<div id="preamble" class="status">
+<div id="quote">Ashok Khanna</div>
+<div id="home-link"><a href="/index.html">Home</a></div>
+<div id="articles-link"><a href="/articles.html">Articles</a></div>
+<div id="resources-link"><a href="/resources.html">Resources</a></div>
+</div>
+<div id="content">
+<h1 class="title">The 'With' Macro</h1>
+<p>
+The <code>WITH</code> macro is used to streamline the use of <code>LET</code> forms where local variables
+are defined by functions of the same name, such as in the below example.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">let</span> ((long-name-of-something (long-name-of-something arg1 arg2 ...))
+      (another-long-name (another-long-name arg1 arg2 ...)))
+  (some-function long-name-of-something another-long-name))
+
+</pre>
+</div>
+
+<p>
+I find the above style of naming variables with the same name as the function
+that creates them (both being a noun) idiomatic of Common Lisp, where variables
+and functions can share the same name, exemplified by the below example that is
+commonly encountered:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">let</span> ((list (list arg1 arg2 arg3 ...)))
+  (<span style="color: #a020f0;">loop</span> for item in list
+       collect item))
+
+</pre>
+</div>
+
+<p>
+This macro is solving the following conuldrum for me: I am using long descriptive names for variables /
+functions (which in itself can be regarded as an issue as it increases the amount
+of characters a (human) reader must process when decrypting the code) and the duplication
+of the name for both variable &amp; function becomes not only unnecessary repetition
+but also increases the overall length of each line, making it unwieldy to fit within
+the typicaly 80 character width I try to follow.
+</p>
+
+<p>
+What I would like is a <code>WITH</code> macro, that, using the first example as an illustrating
+example, has the following form:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(with ((long-name-of-something arg1 arg2 ...)
+       (another-long-name arg1 arg2 ...))
+   (some-function long-name-of-something another-long-name))
+
+</pre>
+</div>
+
+
+<p>
+We can write the <code>WITH</code> macro as follows:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">with</span> (bindings <span style="color: #228b22;">&amp;body</span> body)
+  `(<span style="color: #a020f0;">let</span> ,(make-bindforms bindings)
+     ,@body))
+
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">make-bindforms</span> (bindforms)
+  <span style="color: #8b2252;">"Transform a list of function calls (fn args) to a list of (fn (fn args))."</span>
+  (mapcar #'(<span style="color: #a020f0;">lambda</span> (b)
+              (list (car b) b))
+        bindforms))
+
+</pre>
+</div>
+
+<p>
+A full example:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">make-bindforms</span> (bindforms)
+  <span style="color: #8b2252;">"Transform a list of function calls (fn args) to a list of (fn (fn args))."</span>
+    (mapcar #'(<span style="color: #a020f0;">lambda</span> (b)
+                (list (car b) (cons (car b) (cdr b))))
+          bindforms))
+
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">with</span> (bindings <span style="color: #228b22;">&amp;body</span> body)
+  <span style="color: #8b2252;">"Equivalent to a let form, with the function name in the binding calls used also as the variable name."</span>
+    `(<span style="color: #a020f0;">let</span> ,(make-bindforms bindings)
+       ,@body))
+
+
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">sum</span> (a b)
+  (+ a b))
+
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">prod</span> (a b)
+  (* a b))
+
+
+(with ((sum 3 5)
+       (prod 4 5))
+  (+ sum prod))
+
+
+</pre>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 6 September 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+#+Date: 6 September 2021
+
+#+Title: The 'With' Macro
+
+
+The =WITH= macro is used to streamline the use of =LET= forms where local variables
+are defined by functions of the same name, such as in the below example.
+
+#+begin_src lisp
+
+  (let ((long-name-of-something (long-name-of-something arg1 arg2 ...))
+	(another-long-name (another-long-name arg1 arg2 ...)))
+    (some-function long-name-of-something another-long-name))
+
+#+end_src
+
+I find the above style of naming variables with the same name as the function
+that creates them (both being a noun) idiomatic of Common Lisp, where variables
+and functions can share the same name, exemplified by the below example that is
+commonly encountered:
+
+#+begin_src lisp
+
+  (let ((list (list arg1 arg2 arg3 ...)))
+    (loop for item in list
+	 collect item))
+
+#+end_src
+
+This macro is solving the following conuldrum for me: I am using long descriptive names for variables /
+functions (which in itself can be regarded as an issue as it increases the amount
+of characters a (human) reader must process when decrypting the code) and the duplication
+of the name for both variable & function becomes not only unnecessary repetition
+but also increases the overall length of each line, making it unwieldy to fit within
+the typicaly 80 character width I try to follow.
+
+What I would like is a =WITH= macro, that, using the first example as an illustrating
+example, has the following form:
+
+#+begin_src lisp
+
+ (with ((long-name-of-something arg1 arg2 ...)
+	(another-long-name arg1 arg2 ...))
+    (some-function long-name-of-something another-long-name))
+
+#+end_src
+
+
+We can write the =WITH= macro as follows:
+
+#+begin_src lisp
+
+  (defmacro with (bindings &body body)
+    `(let ,(make-bindforms bindings)
+       ,@body))
+
+  (defun make-bindforms (bindforms)
+    "Transform a list of function calls (fn args) to a list of (fn (fn args))."
+    (mapcar #'(lambda (b)
+		(list (car b) b))
+	  bindforms))
+
+#+end_src
+
+A full example:
+
+#+begin_src lisp
+
+(defun make-bindforms (bindforms)
+  "Transform a list of function calls (fn args) to a list of (fn (fn args))."
+    (mapcar #'(lambda (b)
+		(list (car b) (cons (car b) (cdr b))))
+	  bindforms))
+
+(defmacro with (bindings &body body)
+  "Equivalent to a let form, with the function name in the binding calls used also as the variable name."
+    `(let ,(make-bindforms bindings)
+       ,@body))
+
+
+(defun sum (a b)
+  (+ a b))
+
+(defun prod (a b)
+  (* a b))
+
+
+(with ((sum 3 5)
+       (prod 4 5))
+  (+ sum prod))
+
+
+#+end_src

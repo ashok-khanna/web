@@ -10,7 +10,7 @@ you may also find useful. Thank you for your time and [[file:mailto:email@ashok.
 
 * Articles
 
-I write about Computer Science and Design in the [[file:https://wwww.ashok.jp/articles.html][articles section of my website]].
+I write about Computer Science and Design in the [[file:articles.org][articles section of my website]].
 The four most recent articles are listed below.
 
 1. [[file:https://ashok-khanna.medium.com/introduction-to-dired-mode-91cecd3a06ff][Introduction to Dired Mode]] (August 23, 2021)
@@ -25,7 +25,7 @@ The four most recent articles are listed below.
 
 * Resources
 
-I save down useful papers, free books and weblinks in the [[file:https://www.ashok.jp/resources.html][resources section of my website]].
+I save down useful papers, free books and weblinks in the [[file:resources.org][resources section of my website]].
 Two useful resources are below.
 
 1. [[file://https://clhs.ashok.jp][Common Lisp HyperSpec]] - A mirror of the Common Lisp HyperSpec, as kindly
