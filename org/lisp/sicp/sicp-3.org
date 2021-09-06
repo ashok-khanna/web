@@ -1,9 +1,0 @@
-#+DATE: 31 July 2021
-
-#+TITLE: Modularity, Objects, and State
-
-Previous: [[file:sicp-2.org][2. Building Abstractions with Data]]
-
-Next: [[file:sicp-4.org][4. Metalinguistic Abstraction]]
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

@@ -1,10 +1,11 @@
 #+Date: 6 September 2021
 
-#+Title: The 'With' Macro
+#+Title: The With Macro
 
 
-The =WITH= macro is used to streamline the use of =LET= forms where local variables
-are defined by functions of the same name, such as in the below example.
+The =WITH= macro is used to streamline the use of =LET= forms in the instances
+where we desire local variables to have the same names as the function calls
+whose return values they are bound to. Below is an example of what we mean.
 
 #+begin_src lisp
 
@@ -14,9 +15,8 @@ are defined by functions of the same name, such as in the below example.
 
 #+end_src
 
-I find the above style of naming variables with the same name as the function
-that creates them (both being a noun) idiomatic of Common Lisp, where variables
-and functions can share the same name, exemplified by the below example that is
+I personally find the above style of naming variables and function with the same
+name (a noun) idiomatic of Common Lisp, exemplified by the below example that is
 commonly encountered:
 
 #+begin_src lisp
@@ -27,15 +27,12 @@ commonly encountered:
 
 #+end_src
 
-This macro is solving the following conuldrum for me: I am using long descriptive names for variables /
-functions (which in itself can be regarded as an issue as it increases the amount
-of characters a (human) reader must process when decrypting the code) and the duplication
-of the name for both variable & function becomes not only unnecessary repetition
-but also increases the overall length of each line, making it unwieldy to fit within
-the typicaly 80 character width I try to follow.
+The =WITH= macro aims to streamline such =LET= forms. The benefits are twofold: less repetition
+of names and a significant reduction in the length of expressions, especially when we use
+longer and more descriptive names for variables and functions.
 
-What I would like is a =WITH= macro, that, using the first example as an illustrating
-example, has the following form:
+The =WITH= macro can be illustrated with the following reconfiguration of our first example
+above:
 
 #+begin_src lisp
 
@@ -69,7 +66,7 @@ A full example:
 (defun make-bindforms (bindforms)
   "Transform a list of function calls (fn args) to a list of (fn (fn args))."
     (mapcar #'(lambda (b)
-		(list (car b) (cons (car b) (cdr b))))
+		(list (car b) b))
 	  bindforms))
 
 (defmacro with (bindings &body body)
@@ -89,5 +86,15 @@ A full example:
        (prod 4 5))
   (+ sum prod))
 
+
+#+end_src
+
+Finally, we can similarly define a =WITH*= macro as follows:
+
+#+begin_src lisp
+
+(defmacro with* (bindings &body body)
+    `(let* ,(make-bindforms bindings)
+       ,@body))
 
 #+end_src

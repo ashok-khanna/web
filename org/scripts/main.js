@@ -1,9 +1,3 @@
-// Put Next / Previous on same line
-
-
-
-
-
 // https://stackoverflow.com/questions/62857743/how-to-copy-to-clipboard-text-from-code-and-pre-tags-using-jquery-and-js
 
   const codes = document.getElementsByTagName("pre");
@@ -12,6 +6,7 @@
     code.innerHTML = code.innerHTML.trim();
   }
 
+/*
   for (code of codes){
       var copyButton = document.createElement("button");
       copyButton.classList.add("copy-btn");
@@ -39,4 +34,4 @@
     }
   }
 
-
+*/

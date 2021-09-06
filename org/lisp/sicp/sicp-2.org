@@ -1,9 +1,0 @@
-#+DATE: 31 July 2021
-
-#+TITLE: Building Abstractions with Data
-
-Previous: [[file:sicp-1.org][1. Building Abstractions with Procedures]]
-
-Next: [[file:sicp-3.org][3. Modularity, Objects, and State]]
-
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

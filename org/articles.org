@@ -1,7 +1,7 @@
 #+DATE: 2 September 2021
 #+OPTIONS: html-postamble:nil
 
-#+TITLE: The With Macro
+#+TITLE: Articles
 
 Below is a listing of articles I have written to date, sorted by
 topic and then chronologically. Some of these are hosted on Medium,
