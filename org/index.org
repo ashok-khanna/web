@@ -3,8 +3,8 @@
 
 #+TITLE: Ashok on the Web
 
-Thank you for visiting my website. I like to write about Computer Science, Mathematics
-and Design, with a focus on quality over quantity. In addition, I like to save down
+Thank you for visiting my website. I like to write about Computer Science and Web
+Design, with a focus on quality over quantity. In addition, I like to save down
 valuable resources I find online, which you may also find useful. Thank you for your
 time and [[file:mailto:email@ashok.jp][contact me if anything sparks your interest]].
 
