@@ -1,0 +1,183 @@
+#+Date: 7 September 2021
+#+Title: Autologging in Common Lisp
+
+
+
+Below are the continuation passing macros from Paul Graham:
+
+#+begin_src lisp
+
+(defmacro =defun (name parameters &body body)
+  (let ((f (intern (concatenate 'string
+                                "="
+                                (symbol-name name)))))
+    `(progn
+       (defmacro ,name ,parameters
+         `(,',f *cont* ,,@parameters))
+       (defun ,f (*cont* ,@parameters)
+         ,@body))))
+
+#+end_src
+
+
+Let's now try and adapt it to our needs:
+
+#+begin_src lisp
+
+(defmacro =defun (name parameters &body body)
+  (let ((f (intern (concatenate 'string "=" (symbol-name name)))))
+    `(progn
+       (defmacro ,name ,parameters
+         `(progn
+	    (locally (declare (special *levels* *counter* *flat-list*)))
+	    (incf *counter*)
+	    (let ((*levels* (concatenate 'string *levels* "." (format nil "~a" *counter*)))
+		  (*counter* 0))
+	      (let ((result (,',f *counter* *levels* ,,@parameters)))
+		(push (cons *levels* (list (list ',',f ',',parameters ',',body result))) *flat-list*)
+		result))))
+       (defun ,f (*counter* *levels* ,@parameters)
+	 (let ((*counter* *counter*)
+	       (*levels* *levels*))
+	   (declare (special *counter* *levels*))
+           ,@body)))))
+
+(defparameter *flat-list* nil)
+
+(defparameter *counter* 0)
+
+(defparameter *levels* "0")
+
+(=defun sum (a b) (+ a b))
+
+(progn (sum 1 2) (sum 3 (sum 4 6)))
+
+*flat-list*
+
+#+end_src
+
+
+Make array
+
+#+begin_src lisp
+
+  (defparameter *levels* (make-array 8 :fill-pointer 4))
+
+  
+
+#+end_src
+
+
+#+begin_src lisp
+
+  (defparameter *x* 10)
+
+  (defmacro my-shadow ()
+    `(let ((*x* 0))
+      (declare (special *x*))
+      (my-function)))
+
+  (defun my-function ()
+    (locally (declare (special *x*)))
+    (print *x*))
+
+#+end_src
+
+#+begin_src lisp
+
+(defmacro =my-shadow ()
+  `(progn
+     (defmacro my-shadow ()
+       `(let ((*x* 0))
+	 (declare (special *x*))
+	 (my-function)))
+     (defmacro my-function-2 ()
+       `(print *x*))
+     (defun my-function ()
+       (let ((*x* 3))
+	 (declare (special *x*))
+	 (my-function-2)))))
+
+#+end_src
+
+The below was with the help of PJB. It shows that we only need to declare
+dynamic variables once (?).
+
+#+begin_src lisp
+
+(defparameter *flat-list* nil)
+
+(defparameter *counter* 0)
+
+(defparameter *levels* "0")
+
+
+(defmacro =defun (name parameters &body body)
+  (let ((f (intern (concatenate 'string "=" (symbol-name name)))))
+    `(progn
+       (defmacro ,name ,parameters
+         `(progn
+	        (incf *counter*)
+	        (let ((*levels*  (format nil "~A.~A" *levels* *counter*))
+		          (*counter* 0))
+	          (let ((result (,',f *counter* *levels* ,,@parameters)))
+		        (push (cons *levels* (list (list ',',f ',',parameters ',',body result))) *flat-list*)
+		        result))))
+       (defun ,f (*counter* *levels* ,@parameters)
+         ,@body)
+       (defmacro ,f (,@parameters)
+	 ,@body)
+       ',name)))
+
+
+(=defun sum (a b) (+ a b))
+
+(progn (sum 1 2) (sum 3 (sum 4 6)))
+
+*flat-list*
+--> (("0.2" (=sum (a b) ((+ a b)) 13))
+     ("0.2.1" (=sum (a b) ((+ a b)) 10))
+     ("0.1" (=sum (a b) ((+ a b)) 3)))
+
+#+end_src
+
+#+begin_src lisp
+
+(defparameter *flat-list* nil)
+
+(defparameter *counter* 0)
+
+(defparameter *levels* "0")
+
+
+(defmacro =defun (name parameters &body body)
+  (let ((f (intern (concatenate 'string "=" (symbol-name name)))))
+    `(progn
+       (defmacro ,name ,parameters
+         `(progn
+	        (incf *counter*)
+	        (let ((*levels*  (format nil "~A.~A" *levels* *counter*))
+		          (*counter* 0))
+	          (let ((result (,',f *counter* *levels* ,,@parameters)))
+		        (push (cons *levels* (list (list ',',f ',',parameters ',',body (list ,,@parameters) '-> result))) *flat-list*)
+		        result))))
+       (defun ,f (*counter* *levels* ,@parameters)
+         ,@body)
+       ',name)))
+
+
+(=defun sum (a b) (+ a b))
+
+(progn (setf *flat-list* nil)
+       (sum 1 2)
+       (sum 3 (sum 4 6)))
+13
+*flat-list*
+(("0.6" (=sum (a b) ((+ a b)) (3 10) -> 13))
+ ("0.6.2" (=sum (a b) ((+ a b)) (4 6) -> 10))
+ ("0.6.1" (=sum (a b) ((+ a b)) (4 6) -> 10))
+ ("0.5" (=sum (a b) ((+ a b)) (1 2) -> 3)))
+
+#+end_src
+
+
