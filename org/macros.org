@@ -1,0 +1,102 @@
+#+Date: 10 September 2021
+
+#+Title: Notes on Macros
+
+* Introduction
+
+What follows is an evolving set of notes on Common Lisp Macros. Over time I hope to refine and correct the concepts outlined below. Hopefully at some point in the future I will be able to hold the below in greater regard, and until then, reader beware.
+
+*Macros* are functions that generate Lisp code, programs that write programs. Macros are important in writing good code as they make it possible to write code that is clear and elegant at the user level but which is converted to a more complex or more efficient internal form for execution. Common Lisp has been well-designed to make full use of macros, a point we will touch upon later, and thus a sound understanding of how macros work and how and when to use them is useful for any programmer who has chosen to program in Lisp over other languages.
+
+That said, it is not always clear when to use macros and when to use functions as they can both be used in many cases to achieve similar outcomes. Hopefully this guide will help expand on some of the considerations when to use either, but as a starting point, one approach is to consider the /purpose/ behind our code:
+
+- When we are writing code to directly solve real world problems, that is, when our code adds /functionality/ to our applications, a function may likely be the best choice
+
+- When we want to streamline how we write our code, by defining shorthand syntax for common blocks of code instructions, macros may well likely be more appropriate
+
+In this sense, macros extend the language while functions use the language.
+
+
+* A Mechanical Definition of Macros
+
+We will start by providing a mechanical overview of how macros work, an approach that works suprisingly well in understanding their use. A note to the pedantic, we /will/ skip some details here (and perhaps slightly misrepresent certain items) in favour of a simpler conceptual overview.
+
+The =DEFMACRO= form is used to define macros in the global environment. To quote the Common Lisp HyerSpec, DEFMACRO (with name /name/) defines /name/ as a macro by associating a *macro function* with that /name/ in the global environment. A macro function is a function of two arguments, a form and an environment, that implements macro expansion by producing a form to be evaluated in place of the original argument form.
+
+Loosely speaking, in the below example, DEFMACRO associates the name =WHILE= with a macro function, which will allow the expansion contained in the body below to be produced when called.
+
+#+begin_src lisp
+
+  (defmacro while (test &body body)
+    `(do () ((not ,test)) ,@body))
+  
+#+end_src
+
+The body of a DEFMACRO form can be anything and it must return an expression to be evaluated. For example, consider the contrived example below. We perform a very simple transformation of the input text as part of the macro. 
+
+#+begin_src lisp
+
+  (defmacro contrived-1 (text)
+    (let ((extra-text (format nil "Here is some text: ~a" text)))
+      `(print ,extra-text)))
+
+  (contrived-1 "Hello, World!")
+
+  > "Here is some text: Hello, World!"
+
+#+end_src
+
+Let's try the following now.
+
+#+begin_src lisp
+
+  (defmacro contrived-2 (text)
+    (let ((extra-text (format nil "Here is some text: ~a" text)))
+      (print extra-text)))
+
+  (contrived-2 "Hello, World!")
+
+  > "Here is some text: Hello, World!"
+
+#+end_src
+
+It still works! However, we haven't really learnt much. These examples are not different in any way to a function if we replaced DEFMACRO with DEFUN. Let's try the following now.
+
+#+begin_src lisp
+
+  (defmacro contrived-3 ()
+    (defun contrived-3-fn () (print "Test")))
+
+  (contrived-3-fn)
+  > Error - Undefined Function
+
+  (contrived-3)
+  > Error - The variable contrived-3-fn is unbound
+
+#+end_src
+
+The first error above leads us to our next point about macros. We have discussed how DEFMACRO registers the macro and its macroexpansion in the global environment, but we didn't really build on this point. Let us do that now.
+
+Lisp programs 
+
+https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node59.html
+https://mr.gy/ansi-common-lisp/index.html#Top
+https://mr.gy/ansi-common-lisp/The-Evaluation-Model.html#The-Evaluation-Model
+
+They are useful for /extending/ the language. Macros are special kinds of functions whose arguments are not evaluated. Macr *Functions* produce results, 
+
+Right, (defmacro m (x) (list 'cons 234 111)) turns into something like (setf (macro-function 'm) (lambda (form environment) (list 'cons 234 111)))
+
+
+
+When the compiler sees a macro call like (macrocall x y), what it basically does is (funcall (macro-function 'macrocall) '(macrocall x y) <some-environment>) and then it compiles the result of that call in place of the original (macrocall x y).
+
+
+
+
+
+
+
+
+
+pjb: lisp123: note: don't use ` , and ,@ because those are reader macros, ie. they are text with syntax that needs to be parsed, and to use it, you need to build a text instead of a sexp!
