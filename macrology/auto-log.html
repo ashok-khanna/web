@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-11 Sat 15:17 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autologging in Common Lisp</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+<div id="preamble" class="status">
+<div id="quote">Ashok Khanna</div>
+<div id="home-link"><a href="/index.html">Home</a></div>
+<div id="articles-link"><a href="/articles.html">Articles</a></div>
+<div id="resources-link"><a href="/resources.html">Resources</a></div>
+</div>
+<div id="content">
+<h1 class="title">Autologging in Common Lisp</h1>
+<p>
+Below are the continuation passing macros from Paul Graham:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">=defun</span> (name parameters <span style="color: #228b22;">&amp;body</span> body)
+  (<span style="color: #a020f0;">let</span> ((f (intern (concatenate 'string
+                                <span style="color: #8b2252;">"="</span>
+                                (symbol-name name)))))
+    `(<span style="color: #a020f0;">progn</span>
+       (<span style="color: #a020f0;">defmacro</span> ,name ,parameters
+         `(,',f *cont* ,,@parameters))
+       (<span style="color: #a020f0;">defun</span> ,f (*cont* ,@parameters)
+         ,@body))))
+
+</pre>
+</div>
+
+
+<p>
+Let's now try and adapt it to our needs:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">=defun</span> (name parameters <span style="color: #228b22;">&amp;body</span> body)
+  (<span style="color: #a020f0;">let</span> ((f (intern (concatenate 'string <span style="color: #8b2252;">"="</span> (symbol-name name)))))
+    `(<span style="color: #a020f0;">progn</span>
+       (<span style="color: #a020f0;">defmacro</span> ,name ,parameters
+         `(<span style="color: #a020f0;">progn</span>
+            (<span style="color: #a020f0;">locally</span> (<span style="color: #a020f0;">declare</span> (special *levels* *counter* *flat-list*)))
+            (incf *counter*)
+            (<span style="color: #a020f0;">let</span> ((*levels* (concatenate 'string *levels* <span style="color: #8b2252;">"."</span> (format nil <span style="color: #8b2252;">"~a"</span> *counter*)))
+                  (*counter* 0))
+              (<span style="color: #a020f0;">let</span> ((result (,',f *counter* *levels* ,,@parameters)))
+                (push (cons *levels* (list (list ',',f ',',parameters ',',body result))) *flat-list*)
+                result))))
+       (<span style="color: #a020f0;">defun</span> ,f (*counter* *levels* ,@parameters)
+         (<span style="color: #a020f0;">let</span> ((*counter* *counter*)
+               (*levels* *levels*))
+           (<span style="color: #a020f0;">declare</span> (special *counter* *levels*))
+           ,@body)))))
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*flat-list*</span> nil)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*counter*</span> 0)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*levels*</span> <span style="color: #8b2252;">"0"</span>)
+
+(=defun sum (a b) (+ a b))
+
+(<span style="color: #a020f0;">progn</span> (sum 1 2) (sum 3 (sum 4 6)))
+
+*flat-list*
+
+</pre>
+</div>
+
+
+<p>
+Make array
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*levels*</span> (make-array 8 <span style="color: #483d8b;">:fill-pointer</span> 4))
+
+
+
+</pre>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*x*</span> 10)
+
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">my-shadow</span> ()
+  `(<span style="color: #a020f0;">let</span> ((*x* 0))
+    (<span style="color: #a020f0;">declare</span> (special *x*))
+    (my-function)))
+
+(<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">my-function</span> ()
+  (<span style="color: #a020f0;">locally</span> (<span style="color: #a020f0;">declare</span> (special *x*)))
+  (print *x*))
+
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">=my-shadow</span> ()
+  `(<span style="color: #a020f0;">progn</span>
+     (<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">my-shadow</span> ()
+       `(<span style="color: #a020f0;">let</span> ((*x* 0))
+         (<span style="color: #a020f0;">declare</span> (special *x*))
+         (my-function)))
+     (<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">my-function-2</span> ()
+       `(print *x*))
+     (<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">my-function</span> ()
+       (<span style="color: #a020f0;">let</span> ((*x* 3))
+         (<span style="color: #a020f0;">declare</span> (special *x*))
+         (my-function-2)))))
+
+</pre>
+</div>
+
+<p>
+The below was with the help of PJB. It shows that we only need to declare
+dynamic variables once (?).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*flat-list*</span> nil)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*counter*</span> 0)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*levels*</span> <span style="color: #8b2252;">"0"</span>)
+
+
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">=defun</span> (name parameters <span style="color: #228b22;">&amp;body</span> body)
+  (<span style="color: #a020f0;">let</span> ((f (intern (concatenate 'string <span style="color: #8b2252;">"="</span> (symbol-name name)))))
+    `(<span style="color: #a020f0;">progn</span>
+       (<span style="color: #a020f0;">defmacro</span> ,name ,parameters
+         `(<span style="color: #a020f0;">progn</span>
+                (incf *counter*)
+                (<span style="color: #a020f0;">let</span> ((*levels*  (format nil <span style="color: #8b2252;">"~A.~A"</span> *levels* *counter*))
+                          (*counter* 0))
+                  (<span style="color: #a020f0;">let</span> ((result (,',f *counter* *levels* ,,@parameters)))
+                        (push (cons *levels* (list (list ',',f ',',parameters ',',body result))) *flat-list*)
+                        result))))
+       (<span style="color: #a020f0;">defun</span> ,f (*counter* *levels* ,@parameters)
+         ,@body)
+       (<span style="color: #a020f0;">defmacro</span> ,f (,@parameters)
+         ,@body)
+       ',name)))
+
+
+(=defun sum (a b) (+ a b))
+
+(<span style="color: #a020f0;">progn</span> (sum 1 2) (sum 3 (sum 4 6)))
+
+*flat-list*
+--&gt; ((<span style="color: #8b2252;">"0.2"</span> (=sum (a b) ((+ a b)) 13))
+     (<span style="color: #8b2252;">"0.2.1"</span> (=sum (a b) ((+ a b)) 10))
+     (<span style="color: #8b2252;">"0.1"</span> (=sum (a b) ((+ a b)) 3)))
+
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*flat-list*</span> nil)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*counter*</span> 0)
+
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*levels*</span> <span style="color: #8b2252;">"0"</span>)
+
+
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">=defun</span> (name parameters <span style="color: #228b22;">&amp;body</span> body)
+  (<span style="color: #a020f0;">let</span> ((f (intern (concatenate 'string <span style="color: #8b2252;">"="</span> (symbol-name name)))))
+    `(<span style="color: #a020f0;">progn</span>
+       (<span style="color: #a020f0;">defmacro</span> ,name ,parameters
+         `(<span style="color: #a020f0;">progn</span>
+                (incf *counter*)
+                (<span style="color: #a020f0;">let</span> ((*levels*  (format nil <span style="color: #8b2252;">"~A.~A"</span> *levels* *counter*))
+                          (*counter* 0))
+                  (<span style="color: #a020f0;">let</span> ((result (,',f *counter* *levels* ,,@parameters)))
+                        (push (cons *levels* (list (list ',',f ',',parameters ',',body (list ,,@parameters) '-&gt; result))) *flat-list*)
+                        result))))
+       (<span style="color: #a020f0;">defun</span> ,f (*counter* *levels* ,@parameters)
+         ,@body)
+       ',name)))
+
+
+(=defun sum (a b) (+ a b))
+
+(<span style="color: #a020f0;">progn</span> (setf *flat-list* nil)
+       (sum 1 2)
+       (sum 3 (sum 4 6)))
+13
+*flat-list*
+((<span style="color: #8b2252;">"0.6"</span> (=sum (a b) ((+ a b)) (3 10) -&gt; 13))
+ (<span style="color: #8b2252;">"0.6.2"</span> (=sum (a b) ((+ a b)) (4 6) -&gt; 10))
+ (<span style="color: #8b2252;">"0.6.1"</span> (=sum (a b) ((+ a b)) (4 6) -&gt; 10))
+ (<span style="color: #8b2252;">"0.5"</span> (=sum (a b) ((+ a b)) (1 2) -&gt; 3)))
+
+</pre>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 7 September 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>

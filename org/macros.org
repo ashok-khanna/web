@@ -16,6 +16,51 @@ That said, it is not always clear when to use macros and when to use functions a
 
 In this sense, macros extend the language while functions use the language.
 
+* Why use macros?
+
+
+
+* What makes Lisp macros special?
+
+The capabilities of the Lisp macro system is a consequence of the language design. To understand better, we take a step back and look at how compilers work. In every programming language, the starting point is typing characters or strings via our keyboards onto the machine. Maybe we don't directly type our programs all the time and rather copy parts from Stack Overflow or some other source (such as an existing file), but the key point here is the starting point is text.
+
+After we type in our programs as text, the compiler or interpreter needs to parse them into a form it can recognise, such as an [[file:https://en.wikipedia.org/wiki/Abstract_syntax_tree][abstract syntax tree]]. As Paul Graham writes on page 83 of On Lisp, here's the stroke of genius: the output of the (Lisp) parser consists of /lists of Lisp objects/. The textual language we type our Lisp programs in is the same form as the parsed abstract syntax tree, both being lists of lisp objects. The lines between the printed (textual) representation of our programs with their internal form is blurred, and it is this feature, together with Lisp being a highly capable list processor and access to the (relatively simple) Lisp parser, that makes Lisp macros special.
+
+Two defining features of Lisp are its *prefix form* and its *parentheseses*. Prefix form means we write our operators before our operands, such as /+ 1 2 3 4/ vs. /1 + 2 + 3 + 4/ (the later being an example of infix languages). The benefit of prefix form is its unambiguous structure - the first item is always the operator and the remainder items are always the operands. With infix form, one would need to analyse each object and determine whether it is an operator or an operand. Whilst not insurmountable, this difference makes it more difficult to parse programming languages which adopt an infix style (which many popular languages do).
+
+The second defining feature of Lisp is its copuious use of parentheses. Each expression in Lisp is delimited by a starting and ending parenthesis. The result of this is that the nesting structure of a program in Lisp is again unambiguous, as its explicitly written via the parentheses. Again, in other languages, the nested structure of programs is more implicit and the parser must analyse a block of code to obtain its nested structure. It is true that the use of curly brackets does express a lot of the structure of a program, but there is hidden level of complexity in parsing individual expressions as they too contain various subparts, and the nested structure of the compound expression needs to be parsed as it varies between different expressions.
+
+The net result of the preceding two points is that Lisp is written in an explicit form that requires very little parsing and in fact is written in a form that directly represents the resultant abstract syntax tree, whilst most other languages need an intermediary parsing step to transform the textual form of programs to the parsed form ready for use by the compiler.
+
+It is a small step of logic to then see why Lisp macros are inherently more capable than macros in other languages - by writing and having full access to the abstract syntax tree, it is a much easier (and consequently more robust) process to transform, manipulate and generate code programatically, as we are effectively always working within the abstract syntax tree and are unencumbered by the added complexity of having to parse the implicit assumptions contained within our textual representation of our programs. For example, implicit knowledge of the fact that addition is a binary operation is required to be able to parse /1 + 2 + 3 + 4 + 5/ as we then know that each addition must have a number on the left and a number on the right. On the other hand, /3 4 + 5/ is an incorrectly formed expression, but we only know this when we apply our implicit knowledge of how addition works to the expression. On the other hand in Lisp, everything is mostly explicit and relatively straightforward - (3 4 + 5) gives an error because the first item is not an operator, and (+ 3 4 + 5) gives an error because one of the remaining items (after the first) is a function (+) and not an operaand. Note how both of these errors are unrelated to any underlying assumptions of how addition works.
+
+It wouldn't be fair to stop there, and not note that the preceding discussion is slightly misleading. There /are/ implicit assumptions in Lisp code, for example (+ 3 4 "asdf") will give an error because we have passed in a string when we expected a number. The point however (and something hopefully you can verify once you use Lisp in detail and use other languages in detail) is that there are significantly less of these implicit assumptions that need to be made in Lisp.
+
+There is a corollary point to be made here. The explicit, consistent and structured approach used by Lisp adds to its complexity in reading code. The jury is out for experienced Lispers, but for most programmers, Lisp code is considered more unreadable. Two of the reasons are that infix notation is more natural in many cases as that is what we are used to (especially in mathematics). To me, it is easier to read "allCars LESS myCar" to get a set of all cars except mine, vs. (LESS all-cars my-car). On an individual expression level, it is an exceptionally minor difference, however in big programs, these will add up.
+
+The next point is that other languages make use of more syntatical tokens than Lisp, newlines, whitespace, semi-colons, brackets, curly braces, colons and the list goes on. All of these extra tokens add complexity in parsing, but they do help in readability. They allow us to latch onto different parts of a program and differentiate parts from each other. On the other hand, everything is a list in Lisp, so again it is left to the (human) reader to mentally parse lisp code and and load it into their cognition.
+
+As a consequence of the above, I believe an argument can be formed. Humans are relatively advanced parsers and can work easily with implicit assumptions, varying syntax, and to some extent prefer such approaches as it allows them to quickly digest information. Computers are much more mechanical and need these rules written down for them. The consequence of Lisp being designed as a relatively simple language that makes it easy to parse, which allows for a near one-to-one congruentity between what we type and what is parsed, has an equivalent downside when it comes to code readability. For other languages, the paradigm is reversed.
+
+It is no wonder that for many straightforward programs, it is more beneficial to write in other languages, as code readability is arguably one of the most important features of a programming language. Otherwise, we would all be writing in machine code. All that said, and without ending this article unnecessarily early, the benefits of the Lisp macro system, which as we have hopefully explained, is a consequence of the language itself and cannot be easily replicated as such, can be argued to outweigh the loss in code readability, and is one of the reasons behind the ferverent support Lisp has among its supporters.
+
+We can train ourselves in reading Lisp code, and after some time, it will get much easier. By doing this hard work in getting acquainted with Lisp, we then are left with a highly powerful macro system and a wonderful set of potential opportunities to write and deploy elegant programs. Again quoting Paul Graham (in abridged form), with (lisp) macros we can manipluate programs (and) if necessary, these anipulations can be very extensive. A macro has at its dispotion the full power of Lisp. Being able to change what the compiler sees is almost like being able to rewrite it. We can add any construct to the language that we can define by transformation into existing constructs.
+
+The benefit of macros come from composability. They represent another (very useful) mechanism to break down our programs into more composable parts, abstracting away certain structures at not just the function level, but rather the language level, and this is very useful in writing complex programs. For those interested, SICP is a great introductory read on related topics, which explains the beauty and usefulness of a considered approach to program design that focuses on breaking down programs as much as possible into smaller, distinct, easily testable and easily reusable parts.
+
+Note: Another benefit of the Lisp macro system is that Lisp grants the user full access to the parser, which may not be the case in other languages, which requires users to re-implement their own (potentially inaccurate, especially given the added complexity in parsing such languages) parsers. Whilst parsing is much easier to do in Lisp, conceptually, this access to the full parser is not inherently only intrinsic to Lisp and can be provided by other languages, should they wish to. Accordingly, I have not made much note of this practical difference in the above, although it is a significant source behind the added capabilities of Lisp macros vs. other languages. One can only assume that other languages will catch up and provide users full access to their parsers eventually.
+
+From stack overflow: https://stackoverflow.com/questions/267862/what-makes-lisp-macros-so-special
+
+In most programming languages, syntax is complex. Macros have to take apart program syntax, analyze it, and reassemble it. They do not have access to the program's parser, so they have to depend on heuristics and best-guesses. Sometimes their cut-rate analysis is wrong, and then they break.
+
+But Lisp is different. Lisp macros do have access to the parser, and it is a really simple parser. A Lisp macro is not handed a string, but a preparsed piece of source code in the form of a list, because the source of a Lisp program is not a string; it is a list. And Lisp programs are really good at taking apart lists and putting them back together. They do this reliably, every day.
+
+Conclusion: To conclude:
+- Lisp macros are powerful because of the homoicinty of the Lisp language
+- A consequence of which is that lisp can be harder to read
+- 
+
 
 * A Mechanical Definition of Macros
 
@@ -30,6 +75,16 @@ Loosely speaking, in the below example, DEFMACRO associates the name =WHILE= wit
   (defmacro while (test &body body)
     `(do () ((not ,test)) ,@body))
   
+#+end_src
+
+One can consider the above form, turns into something like the following.
+
+#+begin_src lisp
+
+  (setf (macro-function 'while)
+	(lambda (form environment)
+	  ()))
+
 #+end_src
 
 The body of a DEFMACRO form can be anything and it must return an expression to be evaluated. For example, consider the contrived example below. We perform a very simple transformation of the input text as part of the macro. 
@@ -50,9 +105,9 @@ Let's try the following now.
 
 #+begin_src lisp
 
-  (defmacro contrived-2 (text)
-    (let ((extra-text (format nil "Here is some text: ~a" text)))
-      (print extra-text)))
+()  (defmacro contrived-2 (text)
+      (let ((extra-text (format nil "Here is some text: ~a" text)))
+	(print extra-text)))
 
   (contrived-2 "Hello, World!")
 
@@ -75,6 +130,229 @@ It still works! However, we haven't really learnt much. These examples are not d
 
 #+end_src
 
+* Controlling Evaluation
+
+** Introducing the Quote Special Form
+
+We mentioned earlier that controlling evaluation was one of the two key usages of macros was controlling evaluation. This is a slightly nuanced topic and we will expand more on it here.
+
+The special form =QUOTE= is used to prevent evaluation. The expression =(quote x)= simply returns /x/ without evaluating it. Ultimately, outside of the special forms, which have their own unique evaluation rules, all techniques to control evaluation ultimately rely on usage of the =QUOTE= function.
+
+Quoting is not unique to macros, but rather is available (and used fairly extensively) throughout lisp programs. Let us consider two examples.
+
+#+begin_src lisp
+
+  (list 1 2 (+ 1 2))
+
+  > returns (list 1 2 3)
+
+  (list 1 2 (quote (+ 1 2)))
+
+  > returns (list 1 2 (+ 1 2))
+
+#+end_src
+
+If you recall, Lisp looks at the CAR of the list to determine how to evaluate the list. In both of the above cases, Lisp will encounter LIST and therefore will construct a list consisting of the remaining elements of the original list being processed. As LIST is a function, Lisp will evaluate each of the remaining items. In the first example, above, 1 evaluates to 1, 2 evaluates to 2 and (+ 1 2) evaluates to 3.
+
+On the other hand, look at the second example above. The QUOTE operator prevents evaluation of (+ 1 2), and simply returns it. This explains the result of the second example.
+
+The reader macro ='= can be used as shorthand for quoting, thus the below two are equivalent:
+
+#+begin_src lisp
+
+  (list 1 2 (quote (+ 1 2)))
+
+  (list 1 2 '(+ 1 2)) eval
+
+#+end_src
+
+The benefit of the latter is that it looks much closer to the final result (1 2 (+ 1 2)) and this additional clarity in reading & writing Lisp code cannot be underestimate.
+
+** Preventing & Delaying Evaluation
+
+What we have discussed thus far is /preventing/ evaluation. If that was all we wanted to do, we wouldn't really need macros. The next thing to consider is /delaying/ evaluation. There are two primary ways to do this, with the first being the =EVAL= function.
+
+=EVAL= evaluates the supplied form in the current dynamic environment and the null lexical environment. Let us look at two examples:
+
+#+begin_src lisp
+
+  '(+ 1 2)
+
+  > returns (+ 1 2)
+
+  
+  (eval '(+ 1 2))
+
+  > returns 3
+
+#+end_src
+
+The first is a simple application of the quote function, returning the list (+ 1 2) as output. The =EVAL= in the second example evaluates this form to return 3. Note that EVAL is just a regular function, and thus first its argument, namely '(+ 1 2), is evaluated to return (+ 1 2), and then EVAL is applied on this argument to return 3. In this way,  since a single evaluation already occurs for any argument form in any function form, eval is said to perform "an extra level of evaluation."
+
+The key point to note here is that a combination of quoting and eval allows us to delay evaluation. Quoting prevents evaluation and eval turns on evaluation. However, this has nothing to do with macros, we are working with lisp-wide functions here.
+
+** More on Eval
+
+There are a couple of considerations with =EVAL= that macros overcome. The first is that EVAL is a function, and thus runs during runtime. This can make eval considerably slower than the macro alternative we introduce shortly, which does a lot of its work at compile time. However, there are times we want to access information available at runtime, so this is not only a negative, just a point of differentiation.
+
+What is a significant disadvantage to =EVAL= is that it does not have access to the lexical environment. Try the following.
+
+#+begin_src lisp
+
+  (defparameter *y* 0)
+  
+  (let ((x 1))
+    (eval '(+ 1 x)))
+
+  > Error - x is unbound
+  
+  (let ((x 1))
+    (eval (+ 1 x)))
+
+  > Returns 2
+
+  (let ((x 1))
+    (eval (+ 1 *y*)))
+
+  > Returns 1
+
+#+end_src
+
+The error in the first example is because =EVAL= does not have access to the lexical environment where X is defined. The second example works because (+ 1 X) has been evaluated prior to reaching eval, and as a regular form, it has access to the lexical variable x. In this instance, eval receives 2, which it then evaluates to 2. The final example above shows that EVAL does have access to the current dynamic environment, where we have defined *Y* as a dynamic variable.
+
+** A Note on Macros
+
+Macros are able to evaluate expressions within a lexical environment and thus provide much more powerful capabilities to delay evaluation. Thus, one of the key uses of macros is commonly known to be preventing, delaying and controlling evaluation. They are also more efficient as they do much of their work during compile-time, but that is a separate point that we discuss elsewhere in this article.
+
+* The Backquote Reader Macros
+
+
+
+* Destructuring
+
+Destructuring allows you to bind multiple variables by specifying a pattern against the variable from which they are bound. This is best explained with an example. The below two forms are equivalent.
+
+#+begin_src lisp
+
+  (defparameter *list* '(1 2 3))
+
+  (let ((x (first *list*))
+	(y (second *list*))
+	(z (third *list*)))
+    (format nil "The first item is ~a, the second ~a and the third ~a" x y z))
+
+  (destructuring-bind (x y z) *list*
+    (format nil "The first item is ~a, the second ~a and the third ~a" x y z))
+
+#+end_src
+
+By naming each part of *​LIST*, we are able to /destructure/ it into its components (first, second and third items) and then bind them to the variables x, y and z. Hence, the name /destructuring-bind/. Let's try the following.
+
+#+begin_src lisp
+
+  (defparameter *list-2* '(1 2 3 4))
+
+  (destructuring-bind (x y z) *list-2*
+    (format nil "The first item is ~a, the second ~a and the third ~a" x y z))
+
+  > Error - too many elements to satisfy lambda list
+
+#+end_src
+
+This error makes sense, we haven't correctly destructured *​LIST-2* which has four elements vs. the three we specified. A similar error would be thrown if *​LIST-2* had only two elements and not three, in which case we are trying to destructure too many elements. The destructuring must match exactly the form of the variable being destructured.
+
+An astute reader may note now that every time we use a parameter list within a function, we are implicitly destructuring it into its component elements. Returning back to our topic of discussion, macros, the Common Lisp DEFMACRO facility allows parameter lists to be arbitrary list structures. By this, we mean we can take advantage of the following type of destructuring (taken from Page 94 of On Lisp).
+
+#+begin_src lisp
+
+  (defmacro our-dolist ((var list &optional result) &body body)
+    `(progn
+       (mapc #'(lambda (,var) ,@body) ,list)
+       (let ((,var nil))
+	 ,result)))
+
+#+end_src
+
+As the =DOLIST= macro allows for an optional result form, the first set of its arguments (var, list, result) must be enclosed in a distinct list as to separate the result form from the remaining body forms. However, as the above macro shows, this is no issue to us, as destructuring allows us to cleanly refer to each part of the (nested) parameter list, without any overhead in list processing. As with the other techniques shown here, our aim is to streamline macro code transformation as much as possible so that it is as easy as possible for readers and ourselves to read and understand. Macros are a complex topic, any (valid) simplification is worth its weight in gold.
+
+* The Issue of Variable Capture
+
+One of the challenges in writing macros is their susceptibility to /variable capture/, when macroexpansion causes a name to clash and some symbol ends up referring to a variable from another context. Inadvertent variable capture can cause extremely subtle bugs. Note that variable capture can also be used to your advantage, however we will not cover that here, and leave it to you to explore.
+
+The following is a simple example of a =FOR= macro exposed to variable capture.
+
+#+begin_src lisp
+
+  (defmacro for ((var start stop) &body body)
+    `(do ((,var ,start (1+ ,var))
+	  (limit ,stop))
+	 ((> ,var limit))
+       ,@body))
+
+#+end_src
+
+It will work in most cases:
+
+#+begin_src lisp
+
+  (for (x 1 5)
+    (print x))
+
+#+end_src
+
+But not if we use 'limit' as a variable name:
+
+#+begin_src lisp
+
+  (for (limit 1 5)
+    (print x))
+
+  > Error - The variable limit occurs more than once
+
+#+end_src
+
+The reason here is the name clash between the symbol local to the macro expansion, limit, and the symbol passed in as an argument (again limit). The above phenomena is expressed as the macroexpansion /capturing/ the limit variable. As per Paul Graham on page 119 (in fact much of this article is copying him), errors caused by variable capture are rea, but what they lack in frequency, they make up in viciousness. This capture was comparatively mild - here, at least, we got an error. More often than not, a capturing macro would simply yield incorrect results with no indication that anything was wrong. An example of this is the below.
+
+#+begin_src lisp
+
+  (let ((limit 5))
+    (for (i 1 10)
+      (when (> i limit)
+	(print i))))
+
+#+end_src
+
+In the above case, instead of printing i five times, nothing is printed. Here, the limit variable internal to the macro shadows the outer value of limit, and thus instead of comparing i to 5 in the when form, i is being compared to 10, which it will never exceed by the setup of the above code.
+
+** Avoding Variable Capture with GENSYM
+
+I don't want to complicate things here, but much can be said about how to detect variable capture. I think the easiest way to note is that variable capture issues occur when symbols share the same name, and when that happens, you should carefully check whether the macro will result in inadvertent behaviour. Sometimes the behaviour is intended, so the best defense against variable capture is a sharp eye and programming experience. We will discuss now some strategies to avoiding variable capture.
+
+*** Avoiding capture with correctly named special variables
+
+It is customary practice that any global (that is, special) variables are named with enclosing asterisks (such as *​my-symbol-name*). This aids greatly in avoiding variable capture as a macro writer should be able to safely assume his variables will not clash with any special variables because of their different naming convention. Of course, this assumes everybody follows this naming convention, so please do so! It will save many headaches down the line, for yourself and others.
+
+*** Avoiding capture with packages
+
+If we define macros in their own package, we can segregate their symbols from other packages and thus avoid variable capture when other packages call these macros. However, this does not protect against variable capture caused by macro calls from other macros within the macro package, and also can burden the writer to separate his macros into their own package, when it makes more organisational sense to include together with the functions they work with.
+
+*** Avoding capture with Gensyms
+
+The Common Lisp function =GENSYM= is used to ensure a symbol is unique and thus aiding us in a certain way to avoid variable capture. It returns a symbol, called a /gensym/, which is guaranteed not to be EQ to any symbol either typed in or constructed by a program. Below is an illustrative example of using gensyms to avoid variable capture.
+
+#+begin_src lisp
+
+  (defmacro for ((var start stop) &body body)
+    (let ((gstop (gensym)))
+      `(do ((,var ,start (1+ ,var))
+	    (,gstop , stop))
+	   ((> ,var ,gstop))
+	 ,@body)))
+
+#+end_src
+
+
+
 The first error above leads us to our next point about macros. We have discussed how DEFMACRO registers the macro and its macroexpansion in the global environment, but we didn't really build on this point. Let us do that now.
 
 Lisp programs 
@@ -94,9 +372,13 @@ When the compiler sees a macro call like (macrocall x y), what it basically does
 
 
 
+* The Quote and Backquote Operators
+
 
 
 
 
 
 pjb: lisp123: note: don't use ` , and ,@ because those are reader macros, ie. they are text with syntax that needs to be parsed, and to use it, you need to build a text instead of a sexp!
+
+

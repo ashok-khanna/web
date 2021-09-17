@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- 2021-09-17 Fri 22:37 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notes on Macros</title>
+<meta name="generator" content="Org mode">
+<meta name="author" content="Ashok Khanna">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/css/style.css" />
+</head>
+<body>
+<div id="preamble" class="status">
+<div id="quote">Ashok Khanna</div>
+<div id="home-link"><a href="/index.html">Home</a></div>
+<div id="articles-link"><a href="/articles.html">Articles</a></div>
+<div id="resources-link"><a href="/resources.html">Resources</a></div>
+</div>
+<div id="content">
+<h1 class="title">Notes on Macros</h1>
+
+<div id="outline-container-orgc6007a0" class="outline-2">
+<h2 id="orgc6007a0">Introduction</h2>
+<div class="outline-text-2" id="text-orgc6007a0">
+<p>
+What follows is an evolving set of notes on Common Lisp Macros. Over time I hope to refine and correct the concepts outlined below. Hopefully at some point in the future I will be able to hold the below in greater regard, and until then, reader beware.
+</p>
+
+<p>
+<b>Macros</b> are functions that generate Lisp code, programs that write programs. Macros are important in writing good code as they make it possible to write code that is clear and elegant at the user level but which is converted to a more complex or more efficient internal form for execution. Common Lisp has been well-designed to make full use of macros, a point we will touch upon later, and thus a sound understanding of how macros work and how and when to use them is useful for any programmer who has chosen to program in Lisp over other languages.
+</p>
+
+<p>
+That said, it is not always clear when to use macros and when to use functions as they can both be used in many cases to achieve similar outcomes. Hopefully this guide will help expand on some of the considerations when to use either, but as a starting point, one approach is to consider the <i>purpose</i> behind our code:
+</p>
+
+<ul class="org-ul">
+<li>When we are writing code to directly solve real world problems, that is, when our code adds <i>functionality</i> to our applications, a function may likely be the best choice</li>
+
+<li>When we want to streamline how we write our code, by defining shorthand syntax for common blocks of code instructions, macros may well likely be more appropriate</li>
+</ul>
+
+<p>
+In this sense, macros extend the language while functions use the language.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc45b4b9" class="outline-2">
+<h2 id="orgc45b4b9">Why use macros?</h2>
+</div>
+
+
+
+<div id="outline-container-org0ea4d11" class="outline-2">
+<h2 id="org0ea4d11">What makes Lisp macros special?</h2>
+<div class="outline-text-2" id="text-org0ea4d11">
+<p>
+The capabilities of the Lisp macro system is a consequence of the language design. To understand better, we take a step back and look at how compilers work. In every programming language, the starting point is typing characters or strings via our keyboards onto the machine. Maybe we don't directly type our programs all the time and rather copy parts from Stack Overflow or some other source (such as an existing file), but the key point here is the starting point is text.
+</p>
+
+<p>
+After we type in our programs as text, the compiler or interpreter needs to parse them into a form it can recognise, such as an <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">abstract syntax tree</a>. As Paul Graham writes on page 83 of On Lisp, here's the stroke of genius: the output of the (Lisp) parser consists of <i>lists of Lisp objects</i>. The textual language we type our Lisp programs in is the same form as the parsed abstract syntax tree, both being lists of lisp objects. The lines between the printed (textual) representation of our programs with their internal form is blurred, and it is this feature, together with Lisp being a highly capable list processor and access to the (relatively simple) Lisp parser, that makes Lisp macros special.
+</p>
+
+<p>
+Two defining features of Lisp are its <b>prefix form</b> and its <b>parentheseses</b>. Prefix form means we write our operators before our operands, such as <i>+ 1 2 3 4</i> vs. <i>1 + 2 + 3 + 4</i> (the later being an example of infix languages). The benefit of prefix form is its unambiguous structure - the first item is always the operator and the remainder items are always the operands. With infix form, one would need to analyse each object and determine whether it is an operator or an operand. Whilst not insurmountable, this difference makes it more difficult to parse programming languages which adopt an infix style (which many popular languages do).
+</p>
+
+<p>
+The second defining feature of Lisp is its copuious use of parentheses. Each expression in Lisp is delimited by a starting and ending parenthesis. The result of this is that the nesting structure of a program in Lisp is again unambiguous, as its explicitly written via the parentheses. Again, in other languages, the nested structure of programs is more implicit and the parser must analyse a block of code to obtain its nested structure. It is true that the use of curly brackets does express a lot of the structure of a program, but there is hidden level of complexity in parsing individual expressions as they too contain various subparts, and the nested structure of the compound expression needs to be parsed as it varies between different expressions.
+</p>
+
+<p>
+The net result of the preceding two points is that Lisp is written in an explicit form that requires very little parsing and in fact is written in a form that directly represents the resultant abstract syntax tree, whilst most other languages need an intermediary parsing step to transform the textual form of programs to the parsed form ready for use by the compiler.
+</p>
+
+<p>
+It is a small step of logic to then see why Lisp macros are inherently more capable than macros in other languages - by writing and having full access to the abstract syntax tree, it is a much easier (and consequently more robust) process to transform, manipulate and generate code programatically, as we are effectively always working within the abstract syntax tree and are unencumbered by the added complexity of having to parse the implicit assumptions contained within our textual representation of our programs. For example, implicit knowledge of the fact that addition is a binary operation is required to be able to parse <i>1 + 2 + 3 + 4 + 5</i> as we then know that each addition must have a number on the left and a number on the right. On the other hand, <i>3 4 + 5</i> is an incorrectly formed expression, but we only know this when we apply our implicit knowledge of how addition works to the expression. On the other hand in Lisp, everything is mostly explicit and relatively straightforward - (3 4 + 5) gives an error because the first item is not an operator, and (+ 3 4 + 5) gives an error because one of the remaining items (after the first) is a function (+) and not an operaand. Note how both of these errors are unrelated to any underlying assumptions of how addition works.
+</p>
+
+<p>
+It wouldn't be fair to stop there, and not note that the preceding discussion is slightly misleading. There <i>are</i> implicit assumptions in Lisp code, for example (+ 3 4 "asdf") will give an error because we have passed in a string when we expected a number. The point however (and something hopefully you can verify once you use Lisp in detail and use other languages in detail) is that there are significantly less of these implicit assumptions that need to be made in Lisp.
+</p>
+
+<p>
+There is a corollary point to be made here. The explicit, consistent and structured approach used by Lisp adds to its complexity in reading code. The jury is out for experienced Lispers, but for most programmers, Lisp code is considered more unreadable. Two of the reasons are that infix notation is more natural in many cases as that is what we are used to (especially in mathematics). To me, it is easier to read "allCars LESS myCar" to get a set of all cars except mine, vs. (LESS all-cars my-car). On an individual expression level, it is an exceptionally minor difference, however in big programs, these will add up.
+</p>
+
+<p>
+The next point is that other languages make use of more syntatical tokens than Lisp, newlines, whitespace, semi-colons, brackets, curly braces, colons and the list goes on. All of these extra tokens add complexity in parsing, but they do help in readability. They allow us to latch onto different parts of a program and differentiate parts from each other. On the other hand, everything is a list in Lisp, so again it is left to the (human) reader to mentally parse lisp code and and load it into their cognition.
+</p>
+
+<p>
+As a consequence of the above, I believe an argument can be formed. Humans are relatively advanced parsers and can work easily with implicit assumptions, varying syntax, and to some extent prefer such approaches as it allows them to quickly digest information. Computers are much more mechanical and need these rules written down for them. The consequence of Lisp being designed as a relatively simple language that makes it easy to parse, which allows for a near one-to-one congruentity between what we type and what is parsed, has an equivalent downside when it comes to code readability. For other languages, the paradigm is reversed.
+</p>
+
+<p>
+It is no wonder that for many straightforward programs, it is more beneficial to write in other languages, as code readability is arguably one of the most important features of a programming language. Otherwise, we would all be writing in machine code. All that said, and without ending this article unnecessarily early, the benefits of the Lisp macro system, which as we have hopefully explained, is a consequence of the language itself and cannot be easily replicated as such, can be argued to outweigh the loss in code readability, and is one of the reasons behind the ferverent support Lisp has among its supporters.
+</p>
+
+<p>
+We can train ourselves in reading Lisp code, and after some time, it will get much easier. By doing this hard work in getting acquainted with Lisp, we then are left with a highly powerful macro system and a wonderful set of potential opportunities to write and deploy elegant programs. Again quoting Paul Graham (in abridged form), with (lisp) macros we can manipluate programs (and) if necessary, these anipulations can be very extensive. A macro has at its dispotion the full power of Lisp. Being able to change what the compiler sees is almost like being able to rewrite it. We can add any construct to the language that we can define by transformation into existing constructs.
+</p>
+
+<p>
+The benefit of macros come from composability. They represent another (very useful) mechanism to break down our programs into more composable parts, abstracting away certain structures at not just the function level, but rather the language level, and this is very useful in writing complex programs. For those interested, SICP is a great introductory read on related topics, which explains the beauty and usefulness of a considered approach to program design that focuses on breaking down programs as much as possible into smaller, distinct, easily testable and easily reusable parts.
+</p>
+
+<p>
+Note: Another benefit of the Lisp macro system is that Lisp grants the user full access to the parser, which may not be the case in other languages, which requires users to re-implement their own (potentially inaccurate, especially given the added complexity in parsing such languages) parsers. Whilst parsing is much easier to do in Lisp, conceptually, this access to the full parser is not inherently only intrinsic to Lisp and can be provided by other languages, should they wish to. Accordingly, I have not made much note of this practical difference in the above, although it is a significant source behind the added capabilities of Lisp macros vs. other languages. One can only assume that other languages will catch up and provide users full access to their parsers eventually.
+</p>
+
+<p>
+From stack overflow: <a href="https://stackoverflow.com/questions/267862/what-makes-lisp-macros-so-special">https://stackoverflow.com/questions/267862/what-makes-lisp-macros-so-special</a>
+</p>
+
+<p>
+In most programming languages, syntax is complex. Macros have to take apart program syntax, analyze it, and reassemble it. They do not have access to the program's parser, so they have to depend on heuristics and best-guesses. Sometimes their cut-rate analysis is wrong, and then they break.
+</p>
+
+<p>
+But Lisp is different. Lisp macros do have access to the parser, and it is a really simple parser. A Lisp macro is not handed a string, but a preparsed piece of source code in the form of a list, because the source of a Lisp program is not a string; it is a list. And Lisp programs are really good at taking apart lists and putting them back together. They do this reliably, every day.
+</p>
+
+<p>
+Conclusion: To conclude:
+</p>
+<ul class="org-ul">
+<li>Lisp macros are powerful because of the homoicinty of the Lisp language</li>
+<li>A consequence of which is that lisp can be harder to read</li>
+<li></li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org29de503" class="outline-2">
+<h2 id="org29de503">A Mechanical Definition of Macros</h2>
+<div class="outline-text-2" id="text-org29de503">
+<p>
+We will start by providing a mechanical overview of how macros work, an approach that works suprisingly well in understanding their use. A note to the pedantic, we <i>will</i> skip some details here (and perhaps slightly misrepresent certain items) in favour of a simpler conceptual overview.
+</p>
+
+<p>
+The <code>DEFMACRO</code> form is used to define macros in the global environment. To quote the Common Lisp HyerSpec, DEFMACRO (with name <i>name</i>) defines <i>name</i> as a macro by associating a <b>macro function</b> with that <i>name</i> in the global environment. A macro function is a function of two arguments, a form and an environment, that implements macro expansion by producing a form to be evaluated in place of the original argument form.
+</p>
+
+<p>
+Loosely speaking, in the below example, DEFMACRO associates the name <code>WHILE</code> with a macro function, which will allow the expansion contained in the body below to be produced when called.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">while</span> (test <span style="color: #228b22;">&amp;body</span> body)
+  `(<span style="color: #a020f0;">do</span> () ((not ,test)) ,@body))
+
+</pre>
+</div>
+
+<p>
+One can consider the above form, turns into something like the following.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(setf (macro-function 'while)
+      (<span style="color: #a020f0;">lambda</span> (form environment)
+        ()))
+
+</pre>
+</div>
+
+<p>
+The body of a DEFMACRO form can be anything and it must return an expression to be evaluated. For example, consider the contrived example below. We perform a very simple transformation of the input text as part of the macro. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">contrived-1</span> (text)
+  (<span style="color: #a020f0;">let</span> ((extra-text (format nil <span style="color: #8b2252;">"Here is some text: ~a"</span> text)))
+    `(print ,extra-text)))
+
+(contrived-1 <span style="color: #8b2252;">"Hello, World!"</span>)
+
+&gt; <span style="color: #8b2252;">"Here is some text: Hello, World!"</span>
+
+</pre>
+</div>
+
+<p>
+Let's try the following now.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+()  (<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">contrived-2</span> (text)
+      (<span style="color: #a020f0;">let</span> ((extra-text (format nil <span style="color: #8b2252;">"Here is some text: ~a"</span> text)))
+        (print extra-text)))
+
+  (contrived-2 <span style="color: #8b2252;">"Hello, World!"</span>)
+
+  &gt; <span style="color: #8b2252;">"Here is some text: Hello, World!"</span>
+
+</pre>
+</div>
+
+<p>
+It still works! However, we haven't really learnt much. These examples are not different in any way to a function if we replaced DEFMACRO with DEFUN. Let's try the following now.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">contrived-3</span> ()
+  (<span style="color: #a020f0;">defun</span> <span style="color: #0000ff;">contrived-3-fn</span> () (print <span style="color: #8b2252;">"Test"</span>)))
+
+(contrived-3-fn)
+&gt; Error - Undefined Function
+
+(contrived-3)
+&gt; Error - The variable contrived-3-fn is unbound
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org246d1b7" class="outline-2">
+<h2 id="org246d1b7">Controlling Evaluation</h2>
+<div class="outline-text-2" id="text-org246d1b7">
+</div>
+<div id="outline-container-orgbfd694b" class="outline-3">
+<h3 id="orgbfd694b">Introducing the Quote Special Form</h3>
+<div class="outline-text-3" id="text-orgbfd694b">
+<p>
+We mentioned earlier that controlling evaluation was one of the two key usages of macros was controlling evaluation. This is a slightly nuanced topic and we will expand more on it here.
+</p>
+
+<p>
+The special form <code>QUOTE</code> is used to prevent evaluation. The expression <code>(quote x)</code> simply returns <i>x</i> without evaluating it. Ultimately, outside of the special forms, which have their own unique evaluation rules, all techniques to control evaluation ultimately rely on usage of the <code>QUOTE</code> function.
+</p>
+
+<p>
+Quoting is not unique to macros, but rather is available (and used fairly extensively) throughout lisp programs. Let us consider two examples.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(list 1 2 (+ 1 2))
+
+&gt; returns (list 1 2 3)
+
+(list 1 2 (quote (+ 1 2)))
+
+&gt; returns (list 1 2 (+ 1 2))
+
+</pre>
+</div>
+
+<p>
+If you recall, Lisp looks at the CAR of the list to determine how to evaluate the list. In both of the above cases, Lisp will encounter LIST and therefore will construct a list consisting of the remaining elements of the original list being processed. As LIST is a function, Lisp will evaluate each of the remaining items. In the first example, above, 1 evaluates to 1, 2 evaluates to 2 and (+ 1 2) evaluates to 3.
+</p>
+
+<p>
+On the other hand, look at the second example above. The QUOTE operator prevents evaluation of (+ 1 2), and simply returns it. This explains the result of the second example.
+</p>
+
+<p>
+The reader macro <code>'</code> can be used as shorthand for quoting, thus the below two are equivalent:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(list 1 2 (quote (+ 1 2)))
+
+(list 1 2 '(+ 1 2)) eval
+
+</pre>
+</div>
+
+<p>
+The benefit of the latter is that it looks much closer to the final result (1 2 (+ 1 2)) and this additional clarity in reading &amp; writing Lisp code cannot be underestimate.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1d27675" class="outline-3">
+<h3 id="org1d27675">Preventing &amp; Delaying Evaluation</h3>
+<div class="outline-text-3" id="text-org1d27675">
+<p>
+What we have discussed thus far is <i>preventing</i> evaluation. If that was all we wanted to do, we wouldn't really need macros. The next thing to consider is <i>delaying</i> evaluation. There are two primary ways to do this, with the first being the <code>EVAL</code> function.
+</p>
+
+<p>
+<code>EVAL</code> evaluates the supplied form in the current dynamic environment and the null lexical environment. Let us look at two examples:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+'(+ 1 2)
+
+&gt; returns (+ 1 2)
+
+
+(eval '(+ 1 2))
+
+&gt; returns 3
+
+</pre>
+</div>
+
+<p>
+The first is a simple application of the quote function, returning the list (+ 1 2) as output. The <code>EVAL</code> in the second example evaluates this form to return 3. Note that EVAL is just a regular function, and thus first its argument, namely '(+ 1 2), is evaluated to return (+ 1 2), and then EVAL is applied on this argument to return 3. In this way,  since a single evaluation already occurs for any argument form in any function form, eval is said to perform "an extra level of evaluation."
+</p>
+
+<p>
+The key point to note here is that a combination of quoting and eval allows us to delay evaluation. Quoting prevents evaluation and eval turns on evaluation. However, this has nothing to do with macros, we are working with lisp-wide functions here.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8199af2" class="outline-3">
+<h3 id="org8199af2">More on Eval</h3>
+<div class="outline-text-3" id="text-org8199af2">
+<p>
+There are a couple of considerations with <code>EVAL</code> that macros overcome. The first is that EVAL is a function, and thus runs during runtime. This can make eval considerably slower than the macro alternative we introduce shortly, which does a lot of its work at compile time. However, there are times we want to access information available at runtime, so this is not only a negative, just a point of differentiation.
+</p>
+
+<p>
+What is a significant disadvantage to <code>EVAL</code> is that it does not have access to the lexical environment. Try the following.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*y*</span> 0)
+
+(<span style="color: #a020f0;">let</span> ((x 1))
+  (eval '(+ 1 x)))
+
+&gt; Error - x is unbound
+
+(<span style="color: #a020f0;">let</span> ((x 1))
+  (eval (+ 1 x)))
+
+&gt; Returns 2
+
+(<span style="color: #a020f0;">let</span> ((x 1))
+  (eval (+ 1 *y*)))
+
+&gt; Returns 1
+
+</pre>
+</div>
+
+<p>
+The error in the first example is because <code>EVAL</code> does not have access to the lexical environment where X is defined. The second example works because (+ 1 X) has been evaluated prior to reaching eval, and as a regular form, it has access to the lexical variable x. In this instance, eval receives 2, which it then evaluates to 2. The final example above shows that EVAL does have access to the current dynamic environment, where we have defined <b>Y</b> as a dynamic variable.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgb921211" class="outline-3">
+<h3 id="orgb921211">A Note on Macros</h3>
+<div class="outline-text-3" id="text-orgb921211">
+<p>
+Macros are able to evaluate expressions within a lexical environment and thus provide much more powerful capabilities to delay evaluation. Thus, one of the key uses of macros is commonly known to be preventing, delaying and controlling evaluation. They are also more efficient as they do much of their work during compile-time, but that is a separate point that we discuss elsewhere in this article.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6dcffd5" class="outline-2">
+<h2 id="org6dcffd5">The Backquote Reader Macros</h2>
+</div>
+
+
+
+<div id="outline-container-org9f873f5" class="outline-2">
+<h2 id="org9f873f5">Destructuring</h2>
+<div class="outline-text-2" id="text-org9f873f5">
+<p>
+Destructuring allows you to bind multiple variables by specifying a pattern against the variable from which they are bound. This is best explained with an example. The below two forms are equivalent.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*list*</span> '(1 2 3))
+
+(<span style="color: #a020f0;">let</span> ((x (first *list*))
+      (y (second *list*))
+      (z (third *list*)))
+  (format nil <span style="color: #8b2252;">"The first item is ~a, the second ~a and the third ~a"</span> x y z))
+
+(<span style="color: #a020f0;">destructuring-bind</span> (x y z) *list*
+  (format nil <span style="color: #8b2252;">"The first item is ~a, the second ~a and the third ~a"</span> x y z))
+
+</pre>
+</div>
+
+<p>
+By naming each part of *​LIST*, we are able to <i>destructure</i> it into its components (first, second and third items) and then bind them to the variables x, y and z. Hence, the name <i>destructuring-bind</i>. Let's try the following.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defparameter</span> <span style="color: #a0522d;">*list-2*</span> '(1 2 3 4))
+
+(<span style="color: #a020f0;">destructuring-bind</span> (x y z) *list-2*
+  (format nil <span style="color: #8b2252;">"The first item is ~a, the second ~a and the third ~a"</span> x y z))
+
+&gt; Error - too many elements to satisfy lambda list
+
+</pre>
+</div>
+
+<p>
+This error makes sense, we haven't correctly destructured *​LIST-2* which has four elements vs. the three we specified. A similar error would be thrown if *​LIST-2* had only two elements and not three, in which case we are trying to destructure too many elements. The destructuring must match exactly the form of the variable being destructured.
+</p>
+
+<p>
+An astute reader may note now that every time we use a parameter list within a function, we are implicitly destructuring it into its component elements. Returning back to our topic of discussion, macros, the Common Lisp DEFMACRO facility allows parameter lists to be arbitrary list structures. By this, we mean we can take advantage of the following type of destructuring (taken from Page 94 of On Lisp).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">our-dolist</span> ((var list <span style="color: #228b22;">&amp;optional</span> result) <span style="color: #228b22;">&amp;body</span> body)
+  `(<span style="color: #a020f0;">progn</span>
+     (mapc #'(<span style="color: #a020f0;">lambda</span> (,var) ,@body) ,list)
+     (<span style="color: #a020f0;">let</span> ((,var nil))
+       ,result)))
+
+</pre>
+</div>
+
+<p>
+As the <code>DOLIST</code> macro allows for an optional result form, the first set of its arguments (var, list, result) must be enclosed in a distinct list as to separate the result form from the remaining body forms. However, as the above macro shows, this is no issue to us, as destructuring allows us to cleanly refer to each part of the (nested) parameter list, without any overhead in list processing. As with the other techniques shown here, our aim is to streamline macro code transformation as much as possible so that it is as easy as possible for readers and ourselves to read and understand. Macros are a complex topic, any (valid) simplification is worth its weight in gold.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4e2657f" class="outline-2">
+<h2 id="org4e2657f">The Issue of Variable Capture</h2>
+<div class="outline-text-2" id="text-org4e2657f">
+<p>
+One of the challenges in writing macros is their susceptibility to <i>variable capture</i>, when macroexpansion causes a name to clash and some symbol ends up referring to a variable from another context. Inadvertent variable capture can cause extremely subtle bugs. Note that variable capture can also be used to your advantage, however we will not cover that here, and leave it to you to explore.
+</p>
+
+<p>
+The following is a simple example of a <code>FOR</code> macro exposed to variable capture.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">for</span> ((var start stop) <span style="color: #228b22;">&amp;body</span> body)
+  `(<span style="color: #a020f0;">do</span> ((,var ,start (1+ ,var))
+        (limit ,stop))
+       ((&gt; ,var limit))
+     ,@body))
+
+</pre>
+</div>
+
+<p>
+It will work in most cases:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(for (x 1 5)
+  (print x))
+
+</pre>
+</div>
+
+<p>
+But not if we use 'limit' as a variable name:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(for (limit 1 5)
+  (print x))
+
+&gt; Error - The variable limit occurs more than once
+
+</pre>
+</div>
+
+<p>
+The reason here is the name clash between the symbol local to the macro expansion, limit, and the symbol passed in as an argument (again limit). The above phenomena is expressed as the macroexpansion <i>capturing</i> the limit variable. As per Paul Graham on page 119 (in fact much of this article is copying him), errors caused by variable capture are rea, but what they lack in frequency, they make up in viciousness. This capture was comparatively mild - here, at least, we got an error. More often than not, a capturing macro would simply yield incorrect results with no indication that anything was wrong. An example of this is the below.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">let</span> ((limit 5))
+  (for (i 1 10)
+    (<span style="color: #a020f0;">when</span> (&gt; i limit)
+      (print i))))
+
+</pre>
+</div>
+
+<p>
+In the above case, instead of printing i five times, nothing is printed. Here, the limit variable internal to the macro shadows the outer value of limit, and thus instead of comparing i to 5 in the when form, i is being compared to 10, which it will never exceed by the setup of the above code.
+</p>
+</div>
+
+<div id="outline-container-orge5970b7" class="outline-3">
+<h3 id="orge5970b7">Avoding Variable Capture with GENSYM</h3>
+<div class="outline-text-3" id="text-orge5970b7">
+<p>
+I don't want to complicate things here, but much can be said about how to detect variable capture. I think the easiest way to note is that variable capture issues occur when symbols share the same name, and when that happens, you should carefully check whether the macro will result in inadvertent behaviour. Sometimes the behaviour is intended, so the best defense against variable capture is a sharp eye and programming experience. We will discuss now some strategies to avoiding variable capture.
+</p>
+</div>
+
+<div id="outline-container-orgebb573b" class="outline-4">
+<h4 id="orgebb573b">Avoiding capture with correctly named special variables</h4>
+<div class="outline-text-4" id="text-orgebb573b">
+<p>
+It is customary practice that any global (that is, special) variables are named with enclosing asterisks (such as *​my-symbol-name*). This aids greatly in avoiding variable capture as a macro writer should be able to safely assume his variables will not clash with any special variables because of their different naming convention. Of course, this assumes everybody follows this naming convention, so please do so! It will save many headaches down the line, for yourself and others.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc0a902b" class="outline-4">
+<h4 id="orgc0a902b">Avoiding capture with packages</h4>
+<div class="outline-text-4" id="text-orgc0a902b">
+<p>
+If we define macros in their own package, we can segregate their symbols from other packages and thus avoid variable capture when other packages call these macros. However, this does not protect against variable capture caused by macro calls from other macros within the macro package, and also can burden the writer to separate his macros into their own package, when it makes more organisational sense to include together with the functions they work with.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org452afb6" class="outline-4">
+<h4 id="org452afb6">Avoding capture with Gensyms</h4>
+<div class="outline-text-4" id="text-org452afb6">
+<p>
+The Common Lisp function <code>GENSYM</code> is used to ensure a symbol is unique and thus aiding us in a certain way to avoid variable capture. It returns a symbol, called a <i>gensym</i>, which is guaranteed not to be EQ to any symbol either typed in or constructed by a program. Below is an illustrative example of using gensyms to avoid variable capture.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">
+(<span style="color: #a020f0;">defmacro</span> <span style="color: #0000ff;">for</span> ((var start stop) <span style="color: #228b22;">&amp;body</span> body)
+  (<span style="color: #a020f0;">let</span> ((gstop (gensym)))
+    `(<span style="color: #a020f0;">do</span> ((,var ,start (1+ ,var))
+          (,gstop , stop))
+         ((&gt; ,var ,gstop))
+       ,@body)))
+
+</pre>
+</div>
+
+
+
+<p>
+The first error above leads us to our next point about macros. We have discussed how DEFMACRO registers the macro and its macroexpansion in the global environment, but we didn't really build on this point. Let us do that now.
+</p>
+
+<p>
+Lisp programs 
+</p>
+
+<p>
+<a href="https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node59.html">https://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node59.html</a>
+<a href="https://mr.gy/ansi-common-lisp/index.html#Top">https://mr.gy/ansi-common-lisp/index.html#Top</a>
+<a href="https://mr.gy/ansi-common-lisp/The-Evaluation-Model.html#The-Evaluation-Model">https://mr.gy/ansi-common-lisp/The-Evaluation-Model.html#The-Evaluation-Model</a>
+</p>
+
+<p>
+They are useful for <i>extending</i> the language. Macros are special kinds of functions whose arguments are not evaluated. Macr <b>Functions</b> produce results, 
+</p>
+
+<p>
+Right, (defmacro m (x) (list 'cons 234 111)) turns into something like (setf (macro-function 'm) (lambda (form environment) (list 'cons 234 111)))
+</p>
+
+
+
+<p>
+When the compiler sees a macro call like (macrocall x y), what it basically does is (funcall (macro-function 'macrocall) '(macrocall x y) &lt;some-environment&gt;) and then it compiles the result of that call in place of the original (macrocall x y).
+</p>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<div id="outline-container-orgd89231a" class="outline-2">
+<h2 id="orgd89231a">The Quote and Backquote Operators</h2>
+<div class="outline-text-2" id="text-orgd89231a">
+<p>
+pjb: lisp123: note: don't use ` , and ,@ because those are reader macros, ie. they are text with syntax that needs to be parsed, and to use it, you need to build a text instead of a sexp!
+</p>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="Date">Last updated: 10 September 2021</p><script src="/scripts/main.js"></script>
+</div>
+</body>
+</html>
